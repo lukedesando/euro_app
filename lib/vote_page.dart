@@ -26,7 +26,7 @@ class VotePage extends StatefulWidget {
 
 class _VotePageState extends State<VotePage> {
   String selectedSong = '';
-  double score = 5.0; // Default score
+  String selectedScore = '5.0'; // Default score
   final TextEditingController nameController = TextEditingController();
 
   @override
@@ -52,17 +52,16 @@ class _VotePageState extends State<VotePage> {
             ),
             SizedBox(height: 20),
             Text('Choose Score:'),
-            Slider(
-              value: score,
+            DropDown(
+              items: [
+                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
+              ], // Add your score list here
+              hint: Text('Select Score'),
               onChanged: (value) {
                 setState(() {
-                  score = value;
+                  selectedScore = value.toString();
                 });
               },
-              min: 0,
-              max: 10,
-              divisions: 10,
-              label: score.toStringAsFixed(1),
             ),
             SizedBox(height: 20),
             TextField(
@@ -90,20 +89,17 @@ class _VotePageState extends State<VotePage> {
       Uri.parse(url),
       body: {
         'song_name': selectedSong,
-        'score': score.toString(),
+        'score': selectedScore,
         'user_name': nameController.text,
       },
     );
     if (response.statusCode == 200) {
       // Vote saved successfully
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vote saved successfully')),
-      );
+      // You can add a success message or navigate to a different screen here
     } else {
       // Error saving vote
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving vote')),
-      );
+      // You can show an error message to the user here
     }
   }
 }
+

@@ -62,6 +62,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_dropdown:
+    dependency: "direct main"
+    description:
+      name: flutter_dropdown
+      sha256: "154dda79cf9787b3c4b7565f2ae52dd42d8935d7255b2bbf660b2bf2d63e5daa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1+hotfix.1"
   flutter_lints:
     dependency: "direct dev"
     description:
