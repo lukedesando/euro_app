@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
+import 'vote_page.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -14,17 +16,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: VotePage(),
+      home: HomePage(),
     );
   }
 }
 
-class VotePage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   @override
   _VotePageState createState() => _VotePageState();
 }
 
-class _VotePageState extends State<VotePage> {
+class _VotePageState extends State<HomePage> {
   String selectedSong = '';
   double score = 5.0; // Default score
   final TextEditingController nameController = TextEditingController();
@@ -77,6 +79,19 @@ class _VotePageState extends State<VotePage> {
                 saveVote();
               },
               child: Text('Save Vote'),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => VotePage()),
+                  );  
+                },
+                // style: ElevatedButton.styleFrom(primary: Colors.blue),
+                child: Text('Show Me Another Style'),
+              ),
             ),
           ],
         ),

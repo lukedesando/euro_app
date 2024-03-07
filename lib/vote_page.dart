@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
+import 'main.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -76,6 +78,19 @@ class _VotePageState extends State<VotePage> {
                 saveVote();
               },
               child: Text('Save Vote'),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                  );  
+                },
+                // style: ElevatedButton.styleFrom(primary: Colors.blue),
+                child: Text('Show Me Another Style'),
+              ),
             ),
           ],
         ),
