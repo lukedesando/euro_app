@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const String chosenHTTP = 'http://localhost:5000/songs';
+const String songsHTTP = 'http://localhost:5000/songs';
+const String voteHTTP = 'http://localhost:5000/songs';
 
 class CustomPage extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class CustomPageState extends State<CustomPage> {
   }
 
   _fetchSongs() async {
-    final response = await http.get(Uri.parse(chosenHTTP));
+    final response = await http.get(Uri.parse(songsHTTP));
     if (response.statusCode == 200) {
       setState(() {
         _songs = List<String>.from(json.decode(response.body));
@@ -36,7 +37,7 @@ class CustomPageState extends State<CustomPage> {
   }
 
   void saveVote(String songName) async {
-    final url = chosenHTTP;
+    final url = songsHTTP;
     final response = await http.post(
       Uri.parse(url),
       body: {
@@ -68,7 +69,7 @@ class CustomPageState extends State<CustomPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              SongDropdown(apiUrl: chosenHTTP),
+              SongDropdown(apiUrl: songsHTTP),
               VotingSlider(
                 score: score,
                 onChanged: (newScore) {
