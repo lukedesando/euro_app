@@ -37,9 +37,7 @@ class CustomPageState extends State<CustomPage> {
   }
 
   void saveVote(String songName) async {
-    final url = songsHTTP;
-    final response = await http.post(
-      Uri.parse(url),
+    final response = await http.post(Uri.parse(voteHTTP),
       body: {
         'song_name': _selectedSong,
         'score': score.toString(),
