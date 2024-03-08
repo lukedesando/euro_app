@@ -46,9 +46,7 @@ class _VotePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown(
-              apiUrl: chosenHTTP,
-            ),            
+            SongDropdown(apiUrl: chosenHTTP,),            
             SizedBox(height: 20),
             VotingSlider(
               score: score,
