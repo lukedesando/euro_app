@@ -6,9 +6,10 @@ import 'vote_page.dart';
 import 'test_page.dart';
 import 'custom.dart';
 
+CustomPageState customPageState = CustomPageState();
+
 void main() {
   runApp(MyApp());
-  CustomPageState customPageState = CustomPageState();
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +47,7 @@ class _VotePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown(apiUrl: chosenHTTP,),            
+            SongDropdown(apiUrl: songsHTTP,),            
             SizedBox(height: 20),
             VotingSlider(
               score: score,
@@ -64,7 +65,7 @@ class _VotePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            // SaveVoteButton(saveVote: saveVote, selectedSong: selectedSong),
+            SaveVoteButton(saveVote: customPageState.saveVote, selectedSong: selectedSong),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
@@ -84,4 +85,5 @@ class _VotePageState extends State<HomePage> {
     );
   }
 }
+
 
