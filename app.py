@@ -29,7 +29,7 @@ def vote():
     cursor.execute("INSERT INTO votes (user_name, song_id, score) VALUES (%s, %s, %s)",
                    (data['user_name'], data['song_id'], data['score']))
     db.commit()
-    cursor.close()
+    # cursor.close()
     return jsonify({"message": "Vote recorded"})
 
 if __name__ == '__main__':
