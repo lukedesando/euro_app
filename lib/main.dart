@@ -3,9 +3,12 @@ import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
 import 'vote_page.dart';
+import 'test_page.dart';
+import 'custom.dart';
 
 void main() {
   runApp(MyApp());
+  CustomPageState customPageState = CustomPageState();
 }
 
 class MyApp extends StatelessWidget {
@@ -43,28 +46,17 @@ class _VotePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            DropDown(
-              items: ['Song 1', 'Song 2', 'Song 3'], // Add your song list here
-              hint: Text('Select Song'),
-              onChanged: (value) {
-                setState(() {
-                  selectedSong = value.toString();
-                });
-              },
-            ),
+            SongDropdown(
+              apiUrl: chosenHTTP,
+            ),            
             SizedBox(height: 20),
-            Text('Choose Score:'),
-            Slider(
-              value: score,
+            VotingSlider(
+              score: score,
               onChanged: (value) {
                 setState(() {
                   score = value;
                 });
               },
-              min: 0,
-              max: 10,
-              divisions: 10,
-              label: score.toStringAsFixed(1),
             ),
             SizedBox(height: 20),
             TextField(
@@ -74,19 +66,14 @@ class _VotePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                saveVote();
-              },
-              child: Text('Save Vote'),
-            ),
+            // SaveVoteButton(saveVote: saveVote, selectedSong: selectedSong),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => VotePage()),
+                    MaterialPageRoute(builder: (context) => TestPage()),
                   );  
                 },
                 // style: ElevatedButton.styleFrom(primary: Colors.blue),
@@ -98,27 +85,5 @@ class _VotePageState extends State<HomePage> {
       ),
     );
   }
-
-  void saveVote() async {
-    final url = 'YOUR_API_URL_HERE'; // Replace with your API endpoint
-    final response = await http.post(
-      Uri.parse(url),
-      body: {
-        'song_name': selectedSong,
-        'score': score.toString(),
-        'user_name': nameController.text,
-      },
-    );
-    if (response.statusCode == 200) {
-      // Vote saved successfully
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Vote saved successfully')),
-      );
-    } else {
-      // Error saving vote
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving vote')),
-      );
-    }
-  }
 }
+
