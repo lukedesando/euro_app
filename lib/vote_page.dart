@@ -3,6 +3,7 @@ import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
 import 'main.dart';
+import 'test_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -85,7 +86,8 @@ class _VotePageState extends State<VotePage> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    // MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => TestPage()),
                   );  
                 },
                 // style: ElevatedButton.styleFrom(primary: Colors.blue),
