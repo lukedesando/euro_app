@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import mysql.connector
 
 app = Flask(__name__)
+CORS(app)
 
 # Database connection
 db = mysql.connector.connect(
@@ -10,11 +12,12 @@ db = mysql.connector.connect(
 
 @app.route('/songs', methods=['GET'])
 def get_songs():
-    cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM songs")
+    cursor = db.cursor()
+    cursor.execute("SELECT song_name FROM songs")
     songs = cursor.fetchall()
-    cursor.close()
-    return jsonify(songs)
+    # cursor.close()
+    # db.close()
+    return jsonify([song[0] for song in songs])
 
 @app.route('/vote', methods=['POST'])
 def vote():
