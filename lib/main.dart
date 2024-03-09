@@ -47,7 +47,7 @@ class _VotePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown(apiUrl: songsHTTP,),            
+            SongDropdown(attribute: SongAttribute.artist),            
             SizedBox(height: 20),
             VotingSlider(
               score: score,
@@ -65,7 +65,7 @@ class _VotePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            SaveVoteButton(saveVote: customPageState.saveVote, selectedSong: selectedSong),
+            // SaveVoteButton(saveVote: customPageState.saveVote, selectedSong: selectedSong),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
