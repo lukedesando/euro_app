@@ -19,3 +19,6 @@
 // SongDropdown(
 //   apiUrl: 'http://localhost:5000/songs',
 // )
+
+// SongDropdown(attribute: SongAttribute.artist),
+// SongDropdown(attribute: SongAttribute.songName)
