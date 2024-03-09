@@ -1,3 +1,4 @@
+import 'package:euro_app/voting_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
@@ -70,7 +71,13 @@ class _VotePageState extends State<HomePage> {
               selectedValue: _selectedSong,
               onChanged: _onSongChanged),            
             SizedBox(height: 20),
-            VotingSlider(onScoreChanged: _onScoreChanged),
+            // Text('Or Select Country:'),
+            // SongDropdown( attribute: SongAttribute.country,
+            //   selectedValue: _selectedSong,
+            //   onChanged: _onSongChanged),            
+            // SizedBox(height: 20), #FIXME I want to get both and update both!
+            // VotingSlider(onScoreChanged: _onScoreChanged),
+            VotingDropdown(onScoreSelected: _onScoreChanged),
             SizedBox(height: 20),
             TextField(
               controller: nameController,
@@ -79,7 +86,7 @@ class _VotePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: TestName, score: TestScore),
+            VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
