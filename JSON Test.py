@@ -1,10 +1,12 @@
 import requests
 
+TestNum = 5
+
 url = "http://localhost:5000/vote"
 payload = {
     "user_name": "Casey's Butt",
-    "song_id": 6,
-    "score": 4
+    "score": TestNum,
+    "song_id": TestNum
 }
 
 response = requests.post(url, json=payload)
