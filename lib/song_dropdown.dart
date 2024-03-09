@@ -6,9 +6,6 @@ import 'vote_widget.dart';
 
 enum SongAttribute { artist, songName, country }
 
-const String songsHTTP = 'http://localhost:5000/songs';
-const String voteHTTP = 'http://localhost:5000/vote';
-
 class CustomPage extends StatefulWidget {
   @override
   CustomPageState createState() => CustomPageState();
@@ -22,16 +19,17 @@ class CustomPageState extends State<CustomPage> {
 
   @override
   void initState() {
-    super.initState();
-    fetchSongs(SongAttribute.songName).then((songs) {
-      setState(() {
-        _songs = songs;
-        if (_songs.isNotEmpty) {
-          _selectedSong = _songs[0];
-        }
-      });
+  super.initState();
+  fetchSongs(SongAttribute.songName).then((songs) {
+    setState(() {
+      _songs = songs.map((song) => song['name'] as String).toList();
+      if (_songs.isNotEmpty) {
+        _selectedSong = _songs[0];
+      }
     });
-  }
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,17 +72,17 @@ class CustomPageState extends State<CustomPage> {
   }
 }
 
-Future<List<String>> fetchSongs(SongAttribute attribute) async {
-  final response = await http.get(Uri.parse('http://localhost:5000/songs'));
+Future<List<dynamic>> fetchSongs(SongAttribute attribute) async {
+  final response = await http.get(Uri.parse(songsHTTP));
   if (response.statusCode == 200) {
     List<dynamic> songs = jsonDecode(response.body);
     switch (attribute) {
       case SongAttribute.artist:
-        return songs.map((song) => song['artist'] as String).toList();
+        return songs.map((song) => {'name': song['artist'], 'id': song['song_id']}).toList();
       case SongAttribute.songName:
-        return songs.map((song) => song['song_name'] as String).toList();
+        return songs.map((song) => {'name': song['song_name'], 'id': song['song_id']}).toList();
       case SongAttribute.country:
-        return songs.map((song) => song['country'] as String).toList();
+        return songs.map((song) => {'name': song['country'], 'id': song['song_id']}).toList();
       default:
         return [];
     }
@@ -95,8 +93,15 @@ Future<List<String>> fetchSongs(SongAttribute attribute) async {
 
 class SongDropdown extends StatefulWidget {
   final SongAttribute attribute;
+  final String? selectedValue;
+  final Function(String?, int?) onChanged;
 
-  const SongDropdown({Key? key, required this.attribute}) : super(key: key);
+  const SongDropdown({
+    Key? key,
+    required this.attribute,
+    this.selectedValue,
+    required this.onChanged,
+  }) : super(key: key);
 
   @override
   _SongDropdownState createState() => _SongDropdownState();
@@ -104,17 +109,25 @@ class SongDropdown extends StatefulWidget {
 
 class _SongDropdownState extends State<SongDropdown> {
   List<String> _songs = [];
-  String? _selectedSong;
+  List<DropdownMenuItem<String>> _dropdownItems = [];
+  Map<String, int> _songNameToIdMap = {};
 
   @override
   void initState() {
     super.initState();
     fetchSongs(widget.attribute).then((songs) {
       setState(() {
-        _songs = songs;
-        if (_songs.isNotEmpty) {
-          _selectedSong = _songs[0];
+          for (var song in songs) {
+          String songName = song['name'];
+          _songs.add(songName);
+          _songNameToIdMap[songName] = song['id'];
         }
+        _dropdownItems = _songs.map<DropdownMenuItem<String>>((String name) {
+          return DropdownMenuItem<String>(
+            value: name,
+            child: Text(name),
+          );
+        }).toList();
       });
     });
   }
@@ -122,21 +135,16 @@ class _SongDropdownState extends State<SongDropdown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<String>(
-      value: _selectedSong,
+      value: widget.selectedValue,
       onChanged: (String? newValue) {
-        setState(() {
-          _selectedSong = newValue;
-        });
+        int? newSongId = _songNameToIdMap[newValue];
+        widget.onChanged(newValue, newSongId);
       },
-      items: _songs.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
+      items: _dropdownItems,
     );
   }
 }
+
 
   // @override
   // Widget build(BuildContext context) {

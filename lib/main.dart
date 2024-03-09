@@ -10,6 +10,9 @@ import 'vote_button.dart';
 
 CustomPageState customPageState = CustomPageState();
 
+double TestScore = 3;
+String TestName = "Test";
+
 void main() {
   runApp(MyApp());
 }
@@ -33,9 +36,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _VotePageState extends State<HomePage> {
-  String selectedSong = '';
-  double score = 5.0; // Default score
+  String? _selectedSong;
+  double _currentScore = 5.0; //Default score
+  int? _selectedSongID;
   final TextEditingController nameController = TextEditingController();
+
+  void _onSongChanged(String? newSongName, int? newSongId) {
+    setState(() {
+      _selectedSong = newSongName;
+      _selectedSongID = newSongId;
+    });
+  }
+
+  void _onScoreChanged(double newScore) {
+    setState(() {
+      _currentScore = newScore;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,16 +66,11 @@ class _VotePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown(attribute: SongAttribute.artist),            
+            SongDropdown( attribute: SongAttribute.songName,
+              selectedValue: _selectedSong,
+              onChanged: _onSongChanged),            
             SizedBox(height: 20),
-            VotingSlider(
-              score: score,
-              onChanged: (value) {
-                setState(() {
-                  score = value;
-                });
-              },
-            ),
+            VotingSlider(onScoreChanged: _onScoreChanged),
             SizedBox(height: 20),
             TextField(
               controller: nameController,
@@ -67,14 +79,14 @@ class _VotePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 20),
-            // SaveVoteButton(saveVote: customPageState.saveVote, selectedSong: selectedSong),
+            VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: TestName, score: TestScore),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TestPage()),
+                    MaterialPageRoute(builder: (context) => VotePage()),
                   );  
                 },
                 // style: ElevatedButton.styleFrom(primary: Colors.blue),
