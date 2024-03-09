@@ -26,10 +26,9 @@ class Song(db.Model):
 
 class Vote(db.Model):
     __tablename__ = 'votes'
-    vote_id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(50))
+    user_name = db.Column(db.String(50), primary_key=True)
     score = db.Column(db.Integer)
-    song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'))
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'), primary_key=True)
 
 @app.route('/songs', methods=['GET'])
 def get_songs():
@@ -39,8 +38,12 @@ def get_songs():
 @app.route('/vote', methods=['POST'])
 def vote():
     data = request.json
-    new_vote = Vote(user_name=data['user_name'], score=data['score'], song_id=data['song_id'])
-    db.session.add(new_vote)
+    existing_vote = Vote.query.filter_by(user_name=data['user_name'], song_id=data['song_id']).first()
+    if existing_vote:
+        existing_vote.score = data['score']
+    else:
+        new_vote = Vote(user_name=data['user_name'], score=data['score'], song_id=data['song_id'])
+        db.session.add(new_vote)
     db.session.commit()
     return jsonify({"message": "Vote recorded"})
 
