@@ -1,35 +1,47 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import mysql.connector
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:FuckYou123@localhost/eurovision_db'
+db = SQLAlchemy(app)
 
-# Database connection
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="FuckYou123",
-    database="eurovision_db"
-)
+class Song(db.Model):
+    __tablename__ = 'songs'
+    song_id = db.Column(db.Integer, primary_key=True)
+    country = db.Column(db.String(50))
+    song_name = db.Column(db.String(50))
+    artist = db.Column(db.String(50))
+    language = db.Column(db.String(50))
+
+    def to_dict(self):
+        return {
+            'song_id': self.song_id,
+            'country': self.country,
+            'song_name': self.song_name,
+            'artist': self.artist,
+            'language': self.language
+        }
+
+class Vote(db.Model):
+    __tablename__ = 'votes'
+    vote_id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(50))
+    score = db.Column(db.Integer)
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'))
 
 @app.route('/songs', methods=['GET'])
 def get_songs():
-    cursor = db.cursor()
-    cursor.execute("SELECT song_name FROM songs")
-    songs = cursor.fetchall()
-    # cursor.close()
-    # db.close()
-    return jsonify([song[0] for song in songs])
+    songs = Song.query.all()
+    return jsonify([song.to_dict() for song in songs])
 
 @app.route('/vote', methods=['POST'])
 def vote():
     data = request.json
-    cursor = db.cursor()
-    cursor.execute("INSERT INTO votes (user_name, song_id, score) VALUES (%s, %s, %s)",
-                   (data['user_name'], data['song_id'], data['score']))
-    db.commit()
-    # cursor.close()
+    new_vote = Vote(user_name=data['user_name'], score=data['score'], song_id=data['song_id'])
+    db.session.add(new_vote)
+    db.session.commit()
     return jsonify({"message": "Vote recorded"})
 
 if __name__ == '__main__':
