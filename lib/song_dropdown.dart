@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'vote_widget.dart';
+
 
 enum SongAttribute { artist, songName, country }
 
@@ -37,41 +39,40 @@ class CustomPageState extends State<CustomPage> {
       appBar: AppBar(
         title: Text('Custom Page'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (_songs.isNotEmpty)
-              DropdownButton<String>(
-                value: _selectedSong,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedSong = newValue;
-                  });
-                },
-                items: _songs.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       // MaterialPageRoute(builder: (context) => VotePage(songName: _selectedSong ?? 'No Song Selected')),
-            //     );
-            //   },
-            //   child: Text('Go to Vote Page'),
-            // ),
-          ],
-        ),
-      ),
+      // body: Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.center,
+      //     children: <Widget>[
+      //       if (_songs.isNotEmpty)
+      //         DropdownButton<String>(
+      //           value: _selectedSong,
+      //           onChanged: (String? newValue) {
+      //             setState(() {
+      //               _selectedSong = newValue;
+      //             });
+      //           },
+      //           items: _songs.map<DropdownMenuItem<String>>((String value) {
+      //             return DropdownMenuItem<String>(
+      //               value: value,
+      //               child: Text(value),
+      //             );
+      //           }).toList(),
+      //         ),
+      //       // ElevatedButton(
+      //       //   onPressed: () {
+      //       //     Navigator.push(
+      //       //       context,
+      //       //       // MaterialPageRoute(builder: (context) => VotePage(songName: _selectedSong ?? 'No Song Selected')),
+      //       //     );
+      //       //   },
+      //       //   child: Text('Go to Vote Page'),
+      //       // ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }
-
 
 Future<List<String>> fetchSongs(SongAttribute attribute) async {
   final response = await http.get(Uri.parse('http://localhost:5000/songs'));
@@ -137,7 +138,7 @@ class _SongDropdownState extends State<SongDropdown> {
   }
 }
 
-  @override
+  // @override
   // Widget build(BuildContext context) {
   //   return MaterialApp(
   //     home: Scaffold(
@@ -167,68 +168,6 @@ class _SongDropdownState extends State<SongDropdown> {
   //     ),
   //   );
   // }
-
-class VoteWidget extends StatelessWidget {
-  final Widget child;
-
-  const VoteWidget({Key? key, required this.child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return child;
-  }
-}
-
-class VotingSlider extends StatelessWidget {
-  final double score;
-  final Function(double) onChanged;
-
-  const VotingSlider({
-    Key? key,
-    required this.score,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return VoteWidget(
-      child: Column(
-        children: <Widget>[
-          Text('Score:'),
-          Slider(
-            value: score,
-            onChanged: onChanged,
-            min: 0,
-            max: 10,
-            divisions: 10,
-            label: score.toStringAsFixed(1),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SaveVoteButton extends StatelessWidget {
-  final Function(String) saveVote;
-  final String selectedSong;
-
-  const SaveVoteButton({
-    Key? key,
-    required this.saveVote,
-    required this.selectedSong,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return VoteWidget(
-      child: ElevatedButton(
-        onPressed: () => saveVote(selectedSong),
-        child: Text('Save Vote'),
-      ),
-    );
-  }
-}
 
   // @override
   // Widget build(BuildContext context) {

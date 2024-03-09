@@ -4,7 +4,9 @@ import 'package:http/http.dart' as http;
 
 import 'vote_page.dart';
 import 'test_page.dart';
-import 'custom.dart';
+import 'song_dropdown.dart';
+import 'voting_slider.dart';
+import 'vote_button.dart';
 
 CustomPageState customPageState = CustomPageState();
 
