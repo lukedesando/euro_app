@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import 'vote_widget.dart';
 
-class VotingSlider extends StatelessWidget {
-  final double score;
-  final Function(double) onChanged;
+class VotingSlider extends StatefulWidget {
+  final Function(double) onScoreChanged;
 
-  const VotingSlider({
-    Key? key,
-    required this.score,
-    required this.onChanged,
-  }) : super(key: key);
+  const VotingSlider({Key? key, required this.onScoreChanged}) : super(key: key);
+
+  @override
+  _VotingSliderState createState() => _VotingSliderState();
+}
+
+class _VotingSliderState extends State<VotingSlider> {
+  double _currentScore = 5.0;
 
   @override
   Widget build(BuildContext context) {
-    return VoteWidget(
-      child: Column(
-        children: <Widget>[
-          Text('Score:'),
-          Slider(
-            value: score,
-            onChanged: onChanged,
-            min: 0,
-            max: 10,
-            divisions: 10,
-            label: score.toStringAsFixed(1),
-          ),
-        ],
-      ),
+    return Slider(
+      value: _currentScore,
+      min: 0,
+      max: 10,
+      divisions: 10,
+      label: _currentScore.round().toString(),
+      onChanged: (double value) {
+        setState(() {
+          _currentScore = value;
+        });
+        widget.onScoreChanged(value);
+      },
     );
   }
 }

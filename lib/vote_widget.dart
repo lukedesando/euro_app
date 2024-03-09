@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+const String songsHTTP = 'http://localhost:5000/songs';
+const String voteHTTP = 'http://localhost:5000/vote';
+
 class VoteWidget extends StatelessWidget {
   final Widget child;
 
