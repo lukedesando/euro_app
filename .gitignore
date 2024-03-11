@@ -11,6 +11,7 @@
 migrate_working_dir/
 __pycache__/
 .env
+config.dart
 
 # IntelliJ related
 *.iml
