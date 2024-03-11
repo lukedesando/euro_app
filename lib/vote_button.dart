@@ -17,7 +17,7 @@ class VoteButton extends StatelessWidget {
     required this.songId,
   }) : super(key: key);
 
-  Future<void> _submitVote() async {
+  Future<void> _submitVote(BuildContext context) async {
     final response = await http.post(
       Uri.parse(voteHTTP),
       headers: {'Content-Type': 'application/json'},
@@ -29,7 +29,12 @@ class VoteButton extends StatelessWidget {
     );
 
     if (response.statusCode == 200) {
-      print('Vote submitted successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Vote submitted successfully for $songName'),
+          duration: Duration(seconds: 3),
+        ),
+      );
     } else {
       print('Failed to submit vote');
     }
@@ -38,7 +43,7 @@ class VoteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: _submitVote,
+      onPressed: () => _submitVote(context),
       child: Text('Vote for $songName'),
     );
   }
