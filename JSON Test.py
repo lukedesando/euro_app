@@ -4,7 +4,7 @@ TestNum = 5
 
 url = "http://localhost:5000/vote"
 payload = {
-    "user_name": "Casey's Butt",
+    "user_name": "TestyMcTesterson",
     "score": TestNum,
     "song_id": TestNum
 }
