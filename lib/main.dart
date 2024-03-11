@@ -8,6 +8,7 @@ import 'test_page.dart';
 import 'song_dropdown.dart';
 import 'voting_slider.dart';
 import 'vote_button.dart';
+import 'text_input_field.dart';
 
 CustomPageState customPageState = CustomPageState();
 
@@ -38,7 +39,7 @@ class HomePage extends StatefulWidget {
 
 class _VotePageState extends State<HomePage> {
   String? _selectedSong;
-  double _currentScore = 5.0; //Default score
+  double _currentScore = 0.0; //Default score
   int? _selectedSongID;
   final TextEditingController nameController = TextEditingController();
 
@@ -79,11 +80,8 @@ class _VotePageState extends State<HomePage> {
             // VotingSlider(onScoreChanged: _onScoreChanged),
             VotingDropdown(onScoreSelected: _onScoreChanged),
             SizedBox(height: 20),
-            TextField(
+            NameInputField(
               controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Your Name',
-              ),
             ),
             SizedBox(height: 20),
             VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
