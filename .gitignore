@@ -46,4 +46,4 @@ app.*.map.json
 /android/app/release
 
 # Flutter related
-**/generated_plugin_registrant.cc
+*generated*
