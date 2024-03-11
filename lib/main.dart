@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
-import 'vote_page.dart';
+import 'second_option_page.dart';
 import 'test_page.dart';
 import 'song_dropdown.dart';
 import 'voting_slider.dart';
