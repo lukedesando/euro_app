@@ -34,10 +34,10 @@ class MyApp extends StatelessWidget {
 
 class HomePage extends StatefulWidget {
   @override
-  _VotePageState createState() => _VotePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _VotePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   String? _selectedSong;
   double _currentScore = 0.0; //Default score
   int? _selectedSongID;
@@ -84,7 +84,10 @@ class _VotePageState extends State<HomePage> {
               controller: nameController,
             ),
             SizedBox(height: 20),
+            Center(
+              child:
             VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
+            ),
             SizedBox(height: 20),
             Center(
               child: ElevatedButton(

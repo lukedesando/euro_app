@@ -1,3 +1,4 @@
+import 'package:euro_app/voting_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +29,14 @@ class VotePage extends StatefulWidget {
 
 class _VotePageState extends State<VotePage> {
   String selectedSong = '';
-  String selectedScore = '5.0'; // Default score
+  double _currentScore = 5.0; // Default score
   final TextEditingController nameController = TextEditingController();
+
+  void onScoreChanged(double newScore) {
+    setState(() {
+      _currentScore = newScore;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,17 +61,7 @@ class _VotePageState extends State<VotePage> {
             ),
             SizedBox(height: 20),
             Text('Choose Score:'),
-            DropDown(
-              items: [
-                '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'
-              ], // Add your score list here
-              hint: Text('Select Score'),
-              onChanged: (value) {
-                setState(() {
-                  selectedScore = value.toString();
-                });
-              },
-            ),
+            VotingSlider(onScoreChanged: onScoreChanged),
             SizedBox(height: 20),
             TextField(
               controller: nameController,
@@ -105,7 +102,7 @@ class _VotePageState extends State<VotePage> {
       Uri.parse(url),
       body: {
         'song_name': selectedSong,
-        'score': selectedScore,
+        'score': _currentScore,
         'user_name': nameController.text,
       },
     );
