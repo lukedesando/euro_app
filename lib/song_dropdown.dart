@@ -103,13 +103,16 @@ class _SongDropdownState extends State<SongDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton<String>(
+    return Flexible(
+      child: DropdownButton<String>(
+      isExpanded: true,
       value: widget.selectedValue,
       onChanged: (String? newValue) {
         int? newSongId = _songNameToIdMap[newValue];
         widget.onChanged(newValue, newSongId);
       },
       items: _dropdownItems,
+      ),
     );
   }
 }
