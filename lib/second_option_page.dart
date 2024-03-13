@@ -1,7 +1,9 @@
 import 'package:euro_app/score_slider.dart';
+import 'package:euro_app/song_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
+import 'song_dropdown.dart';
 
 import 'main.dart';
 
@@ -28,11 +30,19 @@ class VotePage extends StatefulWidget {
 }
 
 class _VotePageState extends State<VotePage> {
-  String selectedSong = '';
-  double _currentScore = 5.0; // Default score
+  String? _selectedSong;
+  double _currentScore = 0.0; //Default score
+  int? _selectedSongID;
   final TextEditingController nameController = TextEditingController();
 
-  void onScoreChanged(double newScore) {
+  void _onSongChanged(String? newSongName, int? newSongId) {
+    setState(() {
+      _selectedSong = newSongName;
+      _selectedSongID = newSongId;
+    });
+  }
+
+  void _onScoreChanged(double newScore) {
     setState(() {
       _currentScore = newScore;
     });
@@ -50,18 +60,12 @@ class _VotePageState extends State<VotePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            DropDown(
-              items: ['Song 1', 'Song 2', 'Song 3'], // Add your song list here
-              hint: Text('Select Song'),
-              onChanged: (value) {
-                setState(() {
-                  selectedSong = value.toString();
-                });
-              },
-            ),
+            SongDropdown( attribute: SongAttribute.songName,
+              selectedValue: _selectedSong,
+              onChanged: _onSongChanged),
             SizedBox(height: 20),
             Text('Choose Score:'),
-            VotingSlider(onScoreChanged: onScoreChanged),
+            VotingSlider(onScoreChanged: _onScoreChanged),
             SizedBox(height: 20),
             TextField(
               controller: nameController,
@@ -101,7 +105,7 @@ class _VotePageState extends State<VotePage> {
     final response = await http.post(
       Uri.parse(url),
       body: {
-        'song_name': selectedSong,
+        'song_name': _selectedSong,
         'score': _currentScore,
         'user_name': nameController.text,
       },

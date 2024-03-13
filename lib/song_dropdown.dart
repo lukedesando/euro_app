@@ -90,11 +90,9 @@ class _SongDropdownState extends State<SongDropdown> {
         _dropdownItems = _songs.map<DropdownMenuItem<String>>((String name) {
           return DropdownMenuItem<String>(
             value: name,
-            child: Flexible(
               child: Text(
                 name,
                 overflow: TextOverflow.fade,),
-            )
           );
         }).toList();
       });
@@ -103,8 +101,7 @@ class _SongDropdownState extends State<SongDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: DropdownButton<String>(
+    return DropdownButton<String>(
       isExpanded: true,
       value: widget.selectedValue,
       onChanged: (String? newValue) {
@@ -112,7 +109,6 @@ class _SongDropdownState extends State<SongDropdown> {
         widget.onChanged(newValue, newSongId);
       },
       items: _dropdownItems,
-      ),
     );
   }
 }
