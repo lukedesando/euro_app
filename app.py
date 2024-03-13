@@ -36,6 +36,17 @@ class Song(db.Model):
             'language': self.language
         }
 
+class Country(db.Model):
+    __tablename__ = 'countries'
+    country_code = db.Column(db.String(2), primary_key=True)
+    country_name = db.Column(db.String(50))
+
+    def to_dict(self):
+        return {
+            'country_name': self.country_name,
+            'country_code': self.country_code
+        }
+
 class Vote(db.Model):
     __tablename__ = 'votes'
     user_name = db.Column(db.String(50), primary_key=True)
@@ -44,8 +55,17 @@ class Vote(db.Model):
 
 @app.route('/songs', methods=['GET'])
 def get_songs():
-    songs = Song.query.all()
-    return jsonify([song.to_dict() for song in songs])
+    songs = db.session.query(Song, Country.country_code).outerjoin(Country, Song.country == Country.country_name).all()
+    return jsonify([
+        {
+            'song_id': song[0].song_id,
+            'country': song[0].country,
+            'song_name': song[0].song_name,
+            'artist': song[0].artist,
+            'language': song[0].language,
+            'country_code': song[1] if song[1] is not None else 'Unknown'
+        } for song in songs
+    ])
 
 @app.route('/vote', methods=['POST'])
 def vote():

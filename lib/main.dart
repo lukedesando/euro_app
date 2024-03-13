@@ -10,8 +10,6 @@ import 'score_slider.dart';
 import 'vote_button.dart';
 import 'text_input_field.dart';
 
-CustomPageState customPageState = CustomPageState();
-
 double TestScore = 3;
 String TestName = "Test";
 
@@ -38,14 +36,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? _selectedSong;
+  String? selectedSong;
   double _currentScore = 0.0; //Default score
   int? _selectedSongID;
   final TextEditingController nameController = TextEditingController();
 
   void _onSongChanged(String? newSongName, int? newSongId) {
     setState(() {
-      _selectedSong = newSongName;
+      selectedSong = newSongName;
       _selectedSongID = newSongId;
     });
   }
@@ -68,9 +66,14 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown( attribute: SongAttribute.songName,
-              selectedValue: _selectedSong,
-              onChanged: _onSongChanged),            
+            SongDropdown(
+              onSongSelected: (int id, String name){
+                setState(() {
+                  _selectedSongID = id;
+                  selectedSong = name;
+                });
+              },
+            ),            
             SizedBox(height: 20),
             // Text('Or Select Country:'),
             // SongDropdown( attribute: SongAttribute.country,
@@ -86,7 +89,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             Center(
               child:
-            VoteButton(songName: _selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
+            VoteButton(songName: selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
             ),
             SizedBox(height: 20),
             Center(

@@ -60,9 +60,9 @@ class _VotePageState extends State<VotePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Select Song:'),
-            SongDropdown( attribute: SongAttribute.songName,
-              selectedValue: _selectedSong,
-              onChanged: _onSongChanged),
+            // SongDropdown( attribute: SongAttribute.songName,
+            //   selectedValue: _selectedSong,
+            //   onChanged: _onSongChanged),
             SizedBox(height: 20),
             Text('Choose Score:'),
             VotingSlider(onScoreChanged: _onScoreChanged),
