@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'vote_backend.dart';
 
-
 enum SongAttribute { artist, songName, country }
 
 class CustomPage extends StatefulWidget {
@@ -14,8 +13,6 @@ class CustomPage extends StatefulWidget {
 class CustomPageState extends State<CustomPage> {
   List<String> _songs = [];
   String? _selectedSong;
-  double score = 5.0;
-
 
   @override
   void initState() {
@@ -30,44 +27,12 @@ class CustomPageState extends State<CustomPage> {
   });
 }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Custom Page'),
       ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>[
-      //       if (_songs.isNotEmpty)
-      //         DropdownButton<String>(
-      //           value: _selectedSong,
-      //           onChanged: (String? newValue) {
-      //             setState(() {
-      //               _selectedSong = newValue;
-      //             });
-      //           },
-      //           items: _songs.map<DropdownMenuItem<String>>((String value) {
-      //             return DropdownMenuItem<String>(
-      //               value: value,
-      //               child: Text(value),
-      //             );
-      //           }).toList(),
-      //         ),
-      //       // ElevatedButton(
-      //       //   onPressed: () {
-      //       //     Navigator.push(
-      //       //       context,
-      //       //       // MaterialPageRoute(builder: (context) => VotePage(songName: _selectedSong ?? 'No Song Selected')),
-      //       //     );
-      //       //   },
-      //       //   child: Text('Go to Vote Page'),
-      //       // ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 }
@@ -125,7 +90,11 @@ class _SongDropdownState extends State<SongDropdown> {
         _dropdownItems = _songs.map<DropdownMenuItem<String>>((String name) {
           return DropdownMenuItem<String>(
             value: name,
-            child: Text(name),
+            child: Flexible(
+              child: Text(
+                name,
+                overflow: TextOverflow.fade,),
+            )
           );
         }).toList();
       });
@@ -144,57 +113,3 @@ class _SongDropdownState extends State<SongDropdown> {
     );
   }
 }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     home: Scaffold(
-  //       appBar: AppBar(
-  //         title: Text('Eurovision Songs'),
-  //       ),
-  //       body: Center(
-  //         child: Column(
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: <Widget>[
-  //             SongDropdown(attribute: SongAttribute.songName),
-  //             VotingSlider(
-  //               score: score,
-  //               onChanged: (newScore) {
-  //                 setState(() {
-  //                   score = newScore;
-  //                 });
-  //               },
-  //             ),
-  //             SaveVoteButton(
-  //               saveVote: saveVote,
-  //               selectedSong: _selectedSong,
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return VoteWidget(
-  //     child: _songs.isNotEmpty
-  //         ? DropdownButton<String>(
-  //             value: _selectedSong,
-  //             onChanged: (String? newValue) {
-  //               setState(() {
-  //                 _selectedSong = newValue!;
-  //               });
-  //             },
-  //             items: _songs.map<DropdownMenuItem<String>>((String value) {
-  //               return DropdownMenuItem<String>(
-  //                 value: value,
-  //                 child: Text(value),
-  //               );
-  //             }).toList(),
-  //           )
-  //         : CircularProgressIndicator(),
-  //   );
-  // }
