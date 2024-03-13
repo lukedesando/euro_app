@@ -1,4 +1,4 @@
-import 'package:euro_app/voting_slider.dart';
+import 'package:euro_app/score_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
