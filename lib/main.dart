@@ -8,10 +8,7 @@ import 'test_page.dart';
 import 'song_dropdown.dart';
 import 'score_slider.dart';
 import 'vote_button.dart';
-import 'text_input_field.dart';
-
-double TestScore = 3;
-String TestName = "Test";
+import 'name_input.dart';
 
 void main() {
   runApp(MyApp());
@@ -39,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   String? selectedSong;
   double _currentScore = 0.0; //Default score
   int? _selectedSongID;
+  String? currentUserName;
   final TextEditingController nameController = TextEditingController();
 
   void _onSongChanged(String? newSongName, int? newSongId) {
@@ -51,6 +49,12 @@ class _HomePageState extends State<HomePage> {
   void _onScoreChanged(double newScore) {
     setState(() {
       _currentScore = newScore;
+    });
+  }
+
+    void _onNameChanged(String newUserName) {
+    setState(() {
+      currentUserName = newUserName;
     });
   }
 
@@ -85,6 +89,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             NameInputField(
               controller: nameController,
+              onNameChanged: _onNameChanged,
             ),
             SizedBox(height: 20),
             Center(

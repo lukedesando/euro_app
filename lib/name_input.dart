@@ -3,10 +3,12 @@ import 'vote_backend.dart';
 
 class NameInputField extends StatefulWidget {
   final TextEditingController controller;
+  final Function(String) onNameChanged; // Add a callback for when the name changes
 
   const NameInputField({
     Key? key,
     required this.controller,
+    required this.onNameChanged, // Add this to the constructor
   }) : super(key: key);
 
   @override
@@ -22,14 +24,14 @@ class _NameInputFieldState extends State<NameInputField> {
         labelText: 'Name',
         border: OutlineInputBorder(),
       ),
+      onChanged: (String value) {
+        widget.onNameChanged(value); // Call the callback with the new value
+      },
       onFieldSubmitted: (_) {
-        // This callback is called when the user submits the form (e.g., pressing a button on the keyboard)
-        // You can add any additional logic here if needed.
+        // Additional logic if needed
       },
       onEditingComplete: () {
-        // This callback is called when the text field loses focus
-        // You can add any additional logic here if needed.
-        FocusScope.of(context).unfocus(); // This line ensures the keyboard is dismissed when the user is done editing
+        FocusScope.of(context).unfocus();
       },
     );
   }
