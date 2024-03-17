@@ -21,7 +21,7 @@ class _NameInputFieldState extends State<NameInputField> {
     return TextFormField(
       controller: widget.controller,
       decoration: const InputDecoration(
-        labelText: 'Name',
+        labelText: 'Your Name',
         border: OutlineInputBorder(),
       ),
       onChanged: (String value) {
