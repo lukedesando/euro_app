@@ -1,9 +1,9 @@
-import 'package:euro_app/score_slider.dart';
-import 'package:euro_app/song_dropdown.dart';
+import 'package:euro_app/assets/components/score_slider.dart';
+import 'package:euro_app/assets/components/song_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
-import 'song_dropdown.dart';
+import 'assets/components/song_dropdown.dart';
 
 import 'main.dart';
 
@@ -65,7 +65,7 @@ class _VotePageState extends State<VotePage> {
             //   onChanged: _onSongChanged),
             SizedBox(height: 20),
             Text('Choose Score:'),
-            VotingSlider(onScoreChanged: _onScoreChanged),
+            ScoreSlider(onScoreChanged: _onScoreChanged),
             SizedBox(height: 20),
             TextField(
               controller: nameController,

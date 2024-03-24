@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'vote_backend.dart';
+import '../../vote_backend.dart';
 
 class NameInputField extends StatefulWidget {
   final TextEditingController controller;
@@ -21,7 +21,7 @@ class _NameInputFieldState extends State<NameInputField> {
     return TextFormField(
       controller: widget.controller,
       decoration: const InputDecoration(
-        labelText: 'Your Name',
+        hintText: 'Your Name',
         border: OutlineInputBorder(),
       ),
       onChanged: (String value) {

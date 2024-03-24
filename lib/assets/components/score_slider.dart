@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'vote_backend.dart';
+import '../../vote_backend.dart';
 
-class VotingSlider extends StatefulWidget {
+class ScoreSlider extends StatefulWidget {
   final Function(double) onScoreChanged;
 
-  const VotingSlider({Key? key, required this.onScoreChanged}) : super(key: key);
+  const ScoreSlider({Key? key, required this.onScoreChanged}) : super(key: key);
 
   @override
-  _VotingSliderState createState() => _VotingSliderState();
+  _ScoreSliderState createState() => _ScoreSliderState();
 }
 
-class _VotingSliderState extends State<VotingSlider> {
+class _ScoreSliderState extends State<ScoreSlider> {
   double _currentScore = 5.0;
 
   @override
