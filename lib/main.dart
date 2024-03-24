@@ -1,14 +1,16 @@
-import 'package:euro_app/score_dropdown.dart';
+import 'package:euro_app/assets/components/input_fields.dart';
+import 'package:euro_app/assets/components/persistent_tabs.dart';
+import 'package:euro_app/assets/components/score_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
 
 import 'second_option_page.dart';
 import 'test_page.dart';
-import 'song_dropdown.dart';
-import 'score_slider.dart';
-import 'vote_button.dart';
-import 'name_input.dart';
+import 'assets/components/song_dropdown.dart';
+import 'assets/components/score_slider.dart';
+import 'assets/components/vote_button.dart';
+import 'assets/components/name_input.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +36,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? selectedSong;
-  double _currentScore = 0.0; //Default score
+  double _currentScore = 5.0; //Default score
   int? _selectedSongID;
   String? currentUserName;
   final TextEditingController nameController = TextEditingController();
@@ -61,9 +63,16 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Vote for Eurovision Song'),
+    appBar: AppBar(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+        children: [
+        Image.asset('assets/images/logo.png', height: 40),
+          SizedBox(width: 10), // Add some space between the logo and the text
+          Text('Vote for Eurovision Song'),
+        ],
       ),
+    ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -84,8 +93,8 @@ class _HomePageState extends State<HomePage> {
             //   selectedValue: _selectedSong,
             //   onChanged: _onSongChanged),            
             // SizedBox(height: 20), #FIXME I want to get both and update both!
-            // VotingSlider(onScoreChanged: _onScoreChanged),
-            VotingDropdown(onScoreSelected: _onScoreChanged),
+            ScoreSlider(onScoreChanged: _onScoreChanged),
+            // VotingDropdown(onScoreSelected: _onScoreChanged),
             SizedBox(height: 20),
             NameInputField(
               controller: nameController,
@@ -107,6 +116,19 @@ class _HomePageState extends State<HomePage> {
                 },
                 // style: ElevatedButton.styleFrom(primary: Colors.blue),
                 child: Text('Show Me Another Style'),
+              ),
+            ),
+            SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SimpleTextFields()),
+                  );  
+                },
+                // style: ElevatedButton.styleFrom(primary: Colors.blue),
+                child: Text('Show TextFields'),
               ),
             ),
           ],
