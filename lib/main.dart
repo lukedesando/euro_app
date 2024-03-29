@@ -1,6 +1,7 @@
 import 'package:euro_app/assets/components/input_fields.dart';
 import 'package:euro_app/assets/components/persistent_tabs.dart';
 import 'package:euro_app/assets/components/score_dropdown.dart';
+import 'package:euro_app/results_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ import 'assets/components/song_dropdown.dart';
 import 'assets/components/score_slider.dart';
 import 'assets/components/vote_button.dart';
 import 'assets/components/name_input.dart';
+import 'assets/components/nav_button.dart';
 
 void main() {
   runApp(MyApp());
@@ -88,13 +90,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),            
             SizedBox(height: 20),
-            // Text('Or Select Country:'),
-            // SongDropdown( attribute: SongAttribute.country,
-            //   selectedValue: _selectedSong,
-            //   onChanged: _onSongChanged),            
-            // SizedBox(height: 20), #FIXME I want to get both and update both!
             ScoreSlider(onScoreChanged: _onScoreChanged),
-            // VotingDropdown(onScoreSelected: _onScoreChanged),
             SizedBox(height: 20),
             NameInputField(
               controller: nameController,
@@ -107,28 +103,9 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 20),
             Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => VotePage()),
-                  );  
-                },
-                // style: ElevatedButton.styleFrom(primary: Colors.blue),
-                child: Text('Show Me Another Style'),
-              ),
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SimpleTextFields()),
-                  );  
-                },
-                // style: ElevatedButton.styleFrom(primary: Colors.blue),
-                child: Text('Show TextFields'),
+              child: NavigationButton(
+                buttonText: 'Show My Results',
+                nextPage: ResultsPage(),
               ),
             ),
           ],

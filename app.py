@@ -26,6 +26,7 @@ class Song(db.Model):
     song_name = db.Column(db.String(50))
     artist = db.Column(db.String(50))
     language = db.Column(db.String(50))
+    average_score = db.Column(db.Float)
 
     def to_dict(self):
         return {
@@ -33,7 +34,8 @@ class Song(db.Model):
             'country': self.country,
             'song_name': self.song_name,
             'artist': self.artist,
-            'language': self.language
+            'language': self.language,
+            'average_score': self.average_score
         }
 
 class Country(db.Model):
