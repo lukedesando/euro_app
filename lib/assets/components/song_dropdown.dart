@@ -34,6 +34,7 @@ class _SongDropdownState extends State<SongDropdown> {
     if (response.statusCode == 200) {
       setState(() {
         songs = json.decode(response.body);
+        songs.sort((a, b) => a['country'].compareTo(b['country']));  // Sort the list by the 'name' property
       });
     } else {
       // Handle server errors
