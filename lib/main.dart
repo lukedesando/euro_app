@@ -1,31 +1,34 @@
-import 'package:euro_app/assets/components/input_fields.dart';
-import 'package:euro_app/assets/components/persistent_tabs.dart';
-import 'package:euro_app/assets/components/score_dropdown.dart';
 import 'package:euro_app/results_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dropdown/flutter_dropdown.dart';
-import 'package:http/http.dart' as http;
 
-import 'second_option_page.dart';
-import 'test_page.dart';
-import 'assets/components/song_dropdown.dart';
-import 'assets/components/score_slider.dart';
-import 'assets/components/vote_button.dart';
-import 'assets/components/name_input.dart';
-import 'assets/components/nav_button.dart';
+import 'widgets/song_dropdown.dart';
+import 'widgets/score_slider.dart';
+import 'widgets/vote_button.dart';
+import 'widgets/name_input.dart';
+import 'widgets/nav_button.dart';
+import 'widgets/theme_switch_button.dart';
+import 'style.dart';
+import 'package:provider/provider.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider<ThemeProvider>(
+      create: (context) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  // runApp(MyApp()
+  );
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return MaterialApp(
       title: 'Eurovision Voting App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: themeProvider.themeMode,
       home: HomePage(),
     );
   }
@@ -65,16 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: AppBar(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
-        children: [
-        Image.asset('assets/images/logo.png', height: 40),
-          SizedBox(width: 10), // Add some space between the logo and the text
-          Text('Vote for Eurovision Song'),
-        ],
-      ),
-    ),
+    appBar: appbar_euro(title: 'Vote for Eurovision Song'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -101,16 +95,21 @@ class _HomePageState extends State<HomePage> {
               child:
             VoteButton(songName: selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
             ),
-            SizedBox(height: 20),
-            Center(
-              child: NavigationButton(
-                buttonText: 'Show My Results',
-                nextPage: ResultsPage(),
-              ),
-            ),
           ],
         ),
       ),
+    bottomNavigationBar: BottomAppBar(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          NavigationButton(
+            buttonText: 'Show My Results',
+            nextPage: ResultsPage(),
+          ),
+          ThemeSwitcherButton(),
+        ],
+      ),
+    ),
     );
   }
 }

@@ -9,11 +9,14 @@ class appbar_euro extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
+
     return AppBar(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
         children: [
-        Image.asset('assets/images/logo.png', height: 40),
+          logoBlackandWhite(),
           SizedBox(width: 10), // Add some space between the logo and the text
           Text(this.title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
@@ -22,4 +25,17 @@ class appbar_euro extends StatelessWidget implements PreferredSizeWidget {
   }
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+
+class logoBlackandWhite extends StatelessWidget{
+  const logoBlackandWhite({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    return Image.asset(
+            isDarkTheme ? 'assets/images/logo_white_txt.png' : 'assets/images/logo_black_txt.png',
+            height: 40,
+          );
+  }
 }
