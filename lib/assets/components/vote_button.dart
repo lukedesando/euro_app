@@ -44,7 +44,7 @@ class VoteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () => _submitVote(context),
-      child: Text('Vote for $songName'),
+      child: Text('Vote $score for $songName'),
     );
   }
 }
