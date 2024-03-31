@@ -1,9 +1,9 @@
-import 'package:euro_app/assets/components/score_slider.dart';
-import 'package:euro_app/assets/components/song_dropdown.dart';
+import 'package:euro_app/widgets/score_slider.dart';
+import 'package:euro_app/widgets/song_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropdown/flutter_dropdown.dart';
 import 'package:http/http.dart' as http;
-import 'assets/components/song_dropdown.dart';
+import 'widgets/song_dropdown.dart';
 
 import 'main.dart';
 
