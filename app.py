@@ -65,6 +65,7 @@ def get_songs():
             'song_name': song[0].song_name,
             'artist': song[0].artist,
             'language': song[0].language,
+            'average_score': song[0].average_score,
             'country_code': song[1] if song[1] is not None else 'Unknown'
         } for song in songs
     ])
