@@ -16,7 +16,7 @@ class appbar_euro extends StatelessWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
         children: [
-          logoBlackandWhite(),
+          LogoBlackandWhite(),
           SizedBox(width: 10), // Add some space between the logo and the text
           Text(this.title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
@@ -27,8 +27,8 @@ class appbar_euro extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }
 
-class logoBlackandWhite extends StatelessWidget{
-  const logoBlackandWhite({Key? key}) : super(key: key);
+class LogoBlackandWhite extends StatelessWidget{
+  const LogoBlackandWhite({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
