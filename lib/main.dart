@@ -8,6 +8,7 @@ import 'widgets/name_input.dart';
 import 'widgets/nav_button.dart';
 import 'widgets/theme_switch_button.dart';
 import 'widgets/favorite_button.dart';
+import 'widgets/glitter_box.dart';
 
 import 'style.dart';
 import 'package:euro_app/results_page.dart';
@@ -70,57 +71,60 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: const appbar_euro(title: 'Vote for Eurovision Song'),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: const appbar_euro(title: 'Vote for Eurovision Song'),
+      body: GlitterBox(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              NameInputField(
+                controller: nameController,
+                onNameChanged: _onNameChanged,
+              ),
+              SizedBox(height: 20),
+              const Text('Select Country:'),
+              SongDropdown(
+                onSongSelected: (int id, String name) {
+                  setState(() {
+                    _selectedSongID = id;
+                    selectedSong = name;
+                  });
+                },
+                songId: _selectedSongID ?? 0,
+                userName: currentUserName ?? '',
+              ),
+              SizedBox(height: 20),
+              ScoreSlider(onScoreChanged: _onScoreChanged),
+              SizedBox(height: 20),
+              Center(
+                child: VoteButton(
+                  songName: selectedSong ?? 'No Song Selected',
+                  songId: _selectedSongID ?? 0,
+                  userName: nameController.text,
+                  score: _currentScore,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            NameInputField(
-              controller: nameController,
-              onNameChanged: _onNameChanged,
+            NavigationButton(
+              buttonText: 'Show My Results',
+              nextPage: ResultsPage(userName: currentUserName),
             ),
-            SizedBox(height: 20),
-            const Text('Select Song:'),
-            SongDropdown(
-              onSongSelected: (int id, String name){
-                setState(() {
-                  _selectedSongID = id;
-                  selectedSong = name;
-                });
-              },
-            ),
-            FavoriteButton(songId: _selectedSongID ?? 1,
-            userName: currentUserName ?? ''),            
-            const SizedBox(height: 20),
-            ScoreSlider(onScoreChanged: _onScoreChanged),
-            const SizedBox(height: 20),
-            Center(
-              child:
-            VoteButton(songName: selectedSong ?? 'No Song Selected',
-                      songId: _selectedSongID ?? 0,
-                      userName: nameController.text,
-                      score: _currentScore),
+            ThemeSwitcherButton(),
+            NavigationButton(
+              buttonText: 'Show My Favorites',
+              nextPage: FavoritesPage(userName: currentUserName),
             ),
           ],
         ),
       ),
-    bottomNavigationBar: BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          NavigationButton(
-            buttonText: 'Show My Results',
-            nextPage: ResultsPage(userName: currentUserName,),
-          ),
-          ThemeSwitcherButton(),
-          NavigationButton(
-            buttonText: 'Show My Favorites',
-            nextPage: FavoritesPage(userName: currentUserName,),
-          ),
-        ],
-      ),
-    ),
     );
   }
 }
