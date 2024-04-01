@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../vote_backend.dart';
+import '../http_backend.dart';
 
 class ScoreSlider extends StatefulWidget {
   final Function(double) onScoreChanged;

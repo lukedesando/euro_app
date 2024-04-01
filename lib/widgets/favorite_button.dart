@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:euro_app/vote_backend.dart';
+import 'package:euro_app/http_backend.dart';
 
 class FavoriteButton extends StatefulWidget {
   final int songId;

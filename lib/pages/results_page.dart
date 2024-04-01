@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flag/flag.dart';
 import 'package:euro_app/widgets/nav_button.dart';
 import 'package:euro_app/widgets/theme_switch_button.dart';
-import 'package:euro_app/style.dart';
-import 'vote_backend.dart';
+import 'package:euro_app/styles/style.dart';
+import '../http_backend.dart';
 
 class ResultsPage extends StatefulWidget {
   final String? userName;

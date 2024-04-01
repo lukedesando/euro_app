@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/song_dropdown.dart';
-import 'widgets/score_slider.dart';
-import 'widgets/vote_button.dart';
-import 'widgets/name_input.dart';
-import 'widgets/nav_button.dart';
-import 'widgets/theme_switch_button.dart';
-import 'widgets/glitter_box.dart';
+import '../widgets/song_dropdown.dart';
+import '../widgets/score_slider.dart';
+import '../widgets/vote_button.dart';
+import '../widgets/name_input.dart';
+import '../widgets/nav_button.dart';
+import '../widgets/theme_switch_button.dart';
+import '../widgets/glitter_box.dart';
 
-import 'style.dart';
-import 'package:euro_app/results_page.dart';
-import 'package:euro_app/favorites_page.dart';
+import '../styles/style.dart';
+import 'package:euro_app/pages/results_page.dart';
+import 'package:euro_app/pages/favorites_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
