@@ -68,13 +68,13 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: appbar_euro(title: 'Vote for Eurovision Song'),
+    appBar: const appbar_euro(title: 'Vote for Eurovision Song'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Select Song:'),
+            const Text('Select Song:'),
             SongDropdown(
               onSongSelected: (int id, String name){
                 setState(() {
@@ -83,9 +83,9 @@ class _HomePageState extends State<HomePage> {
                 });
               },
             ),            
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ScoreSlider(onScoreChanged: _onScoreChanged),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             NameInputField(
               controller: nameController,
               onNameChanged: _onNameChanged,
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          NavigationButton(
+          const NavigationButton(
             buttonText: 'Show My Results',
             nextPage: ResultsPage(),
           ),

@@ -32,11 +32,12 @@ void main() {
 }
 
 class ResultsPage extends StatefulWidget {
+  const ResultsPage({super.key});
   @override
-  _ResultsPageState createState() => _ResultsPageState();
+  ResultsPageState createState() => ResultsPageState();
 }
 
-class _ResultsPageState extends State<ResultsPage> {
+class ResultsPageState extends State<ResultsPage> {
   List<dynamic> songs = [];
   bool sortByCountry = true; // Default sort by country
   Timer? _pollingTimer;
@@ -86,7 +87,7 @@ class _ResultsPageState extends State<ResultsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Results'),
+        title: const Text('Totals from All Voters'),
         centerTitle: true,
         actions: [
           logoBlackandWhite(),
@@ -100,7 +101,7 @@ class _ResultsPageState extends State<ResultsPage> {
             child: Text(
               sortByCountry ? 'Sort by Score' : 'Sort by Country',
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyText1?.color ?? Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
