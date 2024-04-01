@@ -47,6 +47,7 @@ app.*.map.json
 
 # Flutter related
 *generated*
+lib/generated_plugin_registrant.dart
 
 # CocoaPods
 Pods/
