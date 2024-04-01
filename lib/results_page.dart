@@ -11,6 +11,7 @@ import 'package:euro_app/main.dart';
 import 'package:flutter/material.dart';
 import 'vote_backend.dart';
 import 'widgets/theme_switch_button.dart';
+import 'vote_backend.dart';
 
 // A simple data model for a song entry
 class SongEntry {
@@ -27,12 +28,10 @@ class SongEntry {
   });
 }
 
-void main() {
-  runApp(MaterialApp(home: ResultsPage()));
-}
-
 class ResultsPage extends StatefulWidget {
-  const ResultsPage({super.key});
+  final String? userName;
+  ResultsPage({super.key, this.userName});
+
   @override
   ResultsPageState createState() => ResultsPageState();
 }
@@ -41,11 +40,19 @@ class ResultsPageState extends State<ResultsPage> {
   List<dynamic> songs = [];
   bool sortByCountry = true; // Default sort by country
   Timer? _pollingTimer;
+  Map<int, int> userVotes = {};
 
   @override
   void initState() {
     super.initState();
     fetchSongs();
+    if (widget.userName != null) {
+    fetchVotes(widget.userName).then((votes) {
+      setState(() {
+        userVotes = votes;
+      });
+    });
+  }
     _startPolling();
   }
   
@@ -74,6 +81,23 @@ class ResultsPageState extends State<ResultsPage> {
       // Handle server errors
     }
   }
+
+  Future<Map<int, int>> fetchVotes(String? userName) async {
+  if (userName == null) {
+    return {};
+  }
+  var url = Uri.parse('$voteGetHTTP?user_name=$userName');
+  var response = await http.get(url);
+  Map<int, int> userVotes = {};
+  if (response.statusCode == 200) {
+    List<dynamic> votes = json.decode(response.body);
+    for (var vote in votes) {
+      userVotes[vote['song_id']] = vote['user_score'];
+    }
+  }
+  return userVotes;
+}
+
 
   sortSongs() {
     if (sortByCountry) {
@@ -118,6 +142,7 @@ class ResultsPageState extends State<ResultsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('${song['song_name']} by ${song['artist']}'),
+                Text('My Score: ${userVotes[song['song_id']] ?? "Not Voted"}'), // Display the user's score
                 Text('Average Score: ${song['average_score']}'),
               ],
             ),

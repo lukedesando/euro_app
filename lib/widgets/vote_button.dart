@@ -19,7 +19,7 @@ class VoteButton extends StatelessWidget {
 
   Future<void> _submitVote(BuildContext context) async {
     final response = await http.post(
-      Uri.parse(voteHTTP),
+      Uri.parse(votePostHTTP),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'user_name': userName,

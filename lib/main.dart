@@ -93,7 +93,10 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 20),
             Center(
               child:
-            VoteButton(songName: selectedSong ?? 'No Song Selected', songId: _selectedSongID ?? 0, userName: nameController.text, score: _currentScore),
+            VoteButton(songName: selectedSong ?? 'No Song Selected',
+                      songId: _selectedSongID ?? 0,
+                      userName: nameController.text,
+                      score: _currentScore),
             ),
           ],
         ),
@@ -102,9 +105,9 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          const NavigationButton(
+          NavigationButton(
             buttonText: 'Show My Results',
-            nextPage: ResultsPage(),
+            nextPage: ResultsPage(userName: currentUserName,),
           ),
           ThemeSwitcherButton(),
         ],

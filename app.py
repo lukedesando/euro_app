@@ -70,7 +70,7 @@ def get_songs():
         } for song in songs
     ])
 
-@app.route('/vote', methods=['POST'])
+@app.route('/votepost', methods=['POST'])
 def vote():
     data = request.json
     existing_vote = Vote.query.filter_by(user_name=data['user_name'], song_id=data['song_id']).first()
@@ -81,6 +81,20 @@ def vote():
         db.session.add(new_vote)
     db.session.commit()
     return jsonify({"message": "Vote recorded"})
+
+@app.route('/voteget', methods=['GET'])
+def get_votes():
+    user_name = request.args.get('user_name')
+    if user_name:
+        votes = Vote.query.filter_by(user_name=user_name).all()
+        return jsonify([
+            {
+                'song_id': vote.song_id,
+                'user_score': vote.score
+            } for vote in votes
+        ])
+    return jsonify([])
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
