@@ -52,7 +52,7 @@ class ThemeSwitcherButton extends StatelessWidget {
         children: [
           Icon(themeProvider.themeMode == ThemeMode.light ? Icons.light_mode : Icons.dark_mode),
           SizedBox(width: 8),
-          Text(themeProvider.themeMode == ThemeMode.light ? 'Switch to Dark Mode' : 'Switch to Light Mode'),
+          Text(themeProvider.themeMode == ThemeMode.light ? 'Dark Mode' : 'Light Mode'),
         ],
       ),
     );

@@ -114,12 +114,12 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             NavigationButton(
-              buttonText: 'Show My Results',
+              buttonText: 'Results',
               nextPage: ResultsPage(userName: currentUserName),
             ),
             ThemeSwitcherButton(),
             NavigationButton(
-              buttonText: 'Show My Favorites',
+              buttonText: 'Favorites',
               nextPage: FavoritesPage(userName: currentUserName),
             ),
           ],
