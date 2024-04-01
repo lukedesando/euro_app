@@ -129,9 +129,27 @@ def remove_favorite():
 
 @app.route('/get_favorites/<user_name>', methods=['GET'])
 def get_favorites(user_name):
-    favorites = Favorite.query.filter_by(user_name=user_name).all()
-    favorite_songs = [{'song_id': fav.song_id} for fav in favorites]
-    return jsonify(favorite_songs), 200
+    favorite_song_ids = db.session.query(Favorite.song_id).filter_by(user_name=user_name).all()
+    favorite_song_ids = [song_id[0] for song_id in favorite_song_ids]
+
+    if not favorite_song_ids:
+        return jsonify([])  # No favorites for this user
+
+    favorite_songs = db.session.query(Song, Country.country_code) \
+        .outerjoin(Country, Song.country == Country.country_name) \
+        .filter(Song.song_id.in_(favorite_song_ids)) \
+        .all()
+
+    return jsonify([
+        {
+            'song_id': song[0].song_id,
+            'country': song[0].country,
+            'song_name': song[0].song_name,
+            'artist': song[0].artist,
+            'country_code': song[1] if song[1] is not None else 'Unknown'
+        } for song in favorite_songs
+    ]), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

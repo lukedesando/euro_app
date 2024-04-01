@@ -50,6 +50,17 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   void _toggleFavorite() async {
+    if (widget.userName == null || widget.userName.isEmpty) {
+    // Show a Snackbar error message if the username is null or empty
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('You must type in your name to favorite a song.'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
+  }
+
     final url = _isFavorited
         ? Uri.parse(favoriteRemoveHTTP)
         : Uri.parse(favoriteAddHTTP);

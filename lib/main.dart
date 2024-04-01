@@ -11,6 +11,7 @@ import 'widgets/favorite_button.dart';
 
 import 'style.dart';
 import 'package:euro_app/results_page.dart';
+import 'package:euro_app/favorites_page.dart';
 
 void main() {
   runApp(ChangeNotifierProvider<ThemeProvider>(
@@ -75,6 +76,11 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            NameInputField(
+              controller: nameController,
+              onNameChanged: _onNameChanged,
+            ),
+            SizedBox(height: 20),
             const Text('Select Song:'),
             SongDropdown(
               onSongSelected: (int id, String name){
@@ -89,11 +95,6 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             ScoreSlider(onScoreChanged: _onScoreChanged),
             const SizedBox(height: 20),
-            NameInputField(
-              controller: nameController,
-              onNameChanged: _onNameChanged,
-            ),
-            SizedBox(height: 20),
             Center(
               child:
             VoteButton(songName: selectedSong ?? 'No Song Selected',
@@ -113,6 +114,10 @@ class _HomePageState extends State<HomePage> {
             nextPage: ResultsPage(userName: currentUserName,),
           ),
           ThemeSwitcherButton(),
+          NavigationButton(
+            buttonText: 'Show My Favorites',
+            nextPage: FavoritesPage(userName: currentUserName,),
+          ),
         ],
       ),
     ),
