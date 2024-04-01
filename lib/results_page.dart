@@ -98,14 +98,21 @@ class ResultsPageState extends State<ResultsPage> {
   return userVotes;
 }
 
-
   sortSongs() {
-    if (sortByCountry) {
-      songs.sort((a, b) => a['country'].compareTo(b['country']));
-    } else {
-      songs.sort((a, b) => b['average_score'].compareTo(a['average_score']));
-    }
+  if (sortByCountry) {
+    songs.sort((a, b) => a['country'].compareTo(b['country']));
+  } else {
+    songs.sort((a, b) {
+      int scoreComparison = b['average_score'].compareTo(a['average_score']);
+      if (scoreComparison != 0) {
+        return scoreComparison;
+      } else {
+        return a['country'].compareTo(b['country']);
+      }
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +129,7 @@ class ResultsPageState extends State<ResultsPage> {
               });
             },
             child: Text(
-              sortByCountry ? 'Sort by Score' : 'Sort by Country',
+              sortByCountry ? 'Sort by Score' : 'Sort Alphabetically',
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                 fontWeight: FontWeight.bold,
@@ -152,7 +159,6 @@ class ResultsPageState extends State<ResultsPage> {
               width: 75,
             ),
           );
-          
         },
       ),
       bottomNavigationBar: BottomAppBar(
