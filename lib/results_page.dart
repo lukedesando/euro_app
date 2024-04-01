@@ -1,32 +1,12 @@
-import 'dart:collection';
+import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:flag/flag.dart';
+import 'package:euro_app/widgets/nav_button.dart';
 import 'package:euro_app/widgets/theme_switch_button.dart';
 import 'package:euro_app/style.dart';
-import 'package:flag/flag.dart';
-import 'dart:async';
-
-import 'package:http/http.dart' as http;
-import 'package:euro_app/widgets/nav_button.dart';
-import 'package:euro_app/main.dart';
-import 'package:flutter/material.dart';
 import 'vote_backend.dart';
-import 'widgets/theme_switch_button.dart';
-import 'vote_backend.dart';
-
-// A simple data model for a song entry
-class SongEntry {
-  final String country;
-  final String songName;
-  final String artist;
-  final double averageScore;
-
-  SongEntry({
-    required this.country,
-    required this.songName,
-    required this.artist,
-    required this.averageScore,
-  });
-}
 
 class ResultsPage extends StatefulWidget {
   final String? userName;
@@ -41,6 +21,7 @@ class ResultsPageState extends State<ResultsPage> {
   bool sortByCountry = true; // Default sort by country
   Timer? _pollingTimer;
   Map<int, int> userVotes = {};
+  bool showUnvotedOnly = false;
 
   @override
   void initState() {
@@ -76,16 +57,13 @@ class ResultsPageState extends State<ResultsPage> {
         songs = json.decode(response.body);
         sortSongs(); // Sort songs based on the selected criteria
       });
-      print(response.body);
+      // print(response.body);
     } else {
       // Handle server errors
     }
   }
 
   Future<Map<int, int>> fetchVotes(String? userName) async {
-  if (userName == null) {
-    return {};
-  }
   var url = Uri.parse('$voteGetHTTP?user_name=$userName');
   var response = await http.get(url);
   Map<int, int> userVotes = {};
@@ -124,6 +102,21 @@ class ResultsPageState extends State<ResultsPage> {
           TextButton(
             onPressed: () {
               setState(() {
+                showUnvotedOnly = !showUnvotedOnly;
+              });
+            },
+            child: Text(
+              showUnvotedOnly ? 'Show All' : "Hide Songs I Voted On",
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          TextButton(
+            onPressed: () {
+              setState(() {
                 sortByCountry = !sortByCountry;
                 sortSongs();
               });
@@ -136,13 +129,16 @@ class ResultsPageState extends State<ResultsPage> {
               ),
             ),
           ),
-          const logoBlackandWhite(),
+          const LogoBlackandWhite(),
         ],
       ),
       body: ListView.builder(
         itemCount: songs.length,
         itemBuilder: (context, index) {
           final song = songs[index];
+              if (showUnvotedOnly && userVotes.containsKey(song['song_id'])) {
+              return SizedBox.shrink(); // Don't show voted songs
+              }
           return ListTile(
             title: Text('${song['country']}'),
             subtitle: Column(
