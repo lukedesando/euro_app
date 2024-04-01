@@ -90,7 +90,6 @@ class ResultsPageState extends State<ResultsPage> {
         title: const Text('Totals from All Voters'),
         centerTitle: true,
         actions: [
-          logoBlackandWhite(),
           TextButton(
             onPressed: () {
               setState(() {
@@ -106,6 +105,7 @@ class ResultsPageState extends State<ResultsPage> {
               ),
             ),
           ),
+          const logoBlackandWhite(),
         ],
       ),
       body: ListView.builder(
