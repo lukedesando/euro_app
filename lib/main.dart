@@ -1,5 +1,5 @@
-import 'package:euro_app/results_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'widgets/song_dropdown.dart';
 import 'widgets/score_slider.dart';
@@ -7,9 +7,10 @@ import 'widgets/vote_button.dart';
 import 'widgets/name_input.dart';
 import 'widgets/nav_button.dart';
 import 'widgets/theme_switch_button.dart';
-import 'style.dart';
-import 'package:provider/provider.dart';
+import 'widgets/favorite_button.dart';
 
+import 'style.dart';
+import 'package:euro_app/results_page.dart';
 
 void main() {
   runApp(ChangeNotifierProvider<ThemeProvider>(
@@ -82,7 +83,9 @@ class _HomePageState extends State<HomePage> {
                   selectedSong = name;
                 });
               },
-            ),            
+            ),
+            FavoriteButton(songId: _selectedSongID ?? 1,
+            userName: currentUserName ?? ''),            
             const SizedBox(height: 20),
             ScoreSlider(onScoreChanged: _onScoreChanged),
             const SizedBox(height: 20),

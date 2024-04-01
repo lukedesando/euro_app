@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 import os
+import logging
 
 #Comments for Hosting Test
 
@@ -37,6 +38,20 @@ class Song(db.Model):
             'language': self.language,
             'average_score': self.average_score
         }
+@app.route('/songs', methods=['GET'])
+def get_songs():
+    songs = db.session.query(Song, Country.country_code).outerjoin(Country, Song.country == Country.country_name).all()
+    return jsonify([
+        {
+            'song_id': song[0].song_id,
+            'country': song[0].country,
+            'song_name': song[0].song_name,
+            'artist': song[0].artist,
+            'language': song[0].language,
+            'average_score': song[0].average_score,
+            'country_code': song[1] if song[1] is not None else 'Unknown'
+        } for song in songs
+    ])
 
 class Country(db.Model):
     __tablename__ = 'countries'
@@ -55,20 +70,6 @@ class Vote(db.Model):
     score = db.Column(db.Integer)
     song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'), primary_key=True)
 
-@app.route('/songs', methods=['GET'])
-def get_songs():
-    songs = db.session.query(Song, Country.country_code).outerjoin(Country, Song.country == Country.country_name).all()
-    return jsonify([
-        {
-            'song_id': song[0].song_id,
-            'country': song[0].country,
-            'song_name': song[0].song_name,
-            'artist': song[0].artist,
-            'language': song[0].language,
-            'average_score': song[0].average_score,
-            'country_code': song[1] if song[1] is not None else 'Unknown'
-        } for song in songs
-    ])
 
 @app.route('/votepost', methods=['POST'])
 def vote():
@@ -95,6 +96,42 @@ def get_votes():
         ])
     return jsonify([])
 
+class Favorite(db.Model):
+    __tablename__ = 'favorites'
+    user_name = db.Column(db.String(255), primary_key=True)
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'), primary_key=True)
+
+    def __repr__(self):
+        return f'<Favorite {self.user_name} {self.song_id}>'
+    
+@app.route('/add_favorite', methods=['POST'])
+def add_favorite():
+    try:
+        data = request.json
+        new_favorite = Favorite(user_name=data['user_name'], song_id=data['song_id'])
+        db.session.add(new_favorite)
+        db.session.commit()
+        return jsonify({'message': 'Favorite added successfully'}), 200
+    except Exception as e:
+        logging.exception("Error adding favorite")  # Log the exception
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/remove_favorite', methods=['POST'])
+def remove_favorite():
+    data = request.json
+    favorite = Favorite.query.filter_by(user_name=data['user_name'], song_id=data['song_id']).first()
+    if favorite:
+        db.session.delete(favorite)
+        db.session.commit()
+        return jsonify({'message': 'Favorite removed successfully'}), 200
+    else:
+        return jsonify({'message': 'Favorite not found'}), 404
+
+@app.route('/get_favorites/<user_name>', methods=['GET'])
+def get_favorites(user_name):
+    favorites = Favorite.query.filter_by(user_name=user_name).all()
+    favorite_songs = [{'song_id': fav.song_id} for fav in favorites]
+    return jsonify(favorite_songs), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
