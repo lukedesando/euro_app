@@ -69,17 +69,26 @@ class _GlitterBoxState extends State<GlitterBox> with SingleTickerProviderStateM
     final size = MediaQuery.of(context).size;
     setState(() {
       for (final particle in _particles) {
-        double dx = particle.position.dx + (_random.nextDouble() - 0.5) * 3; // Small random side-to-side movement
-        double dy = particle.position.dy + .75; // Move downward
+        // Randomly change the direction and speed
+        double horizontalMovement = (_random.nextDouble() - 0.5) * 5; // Increased random factor for side-to-side movement
+        double verticalMovement = 1 + _random.nextDouble() * 2; // Randomized falling speed
+
+        double dx = particle.position.dx + horizontalMovement;
+        double dy = particle.position.dy + verticalMovement;
+
+        // Boundary check and reset position if necessary
+        if (dx < 0) dx = 0;
+        if (dx > size.width) dx = size.width;
         if (dy > size.height) {
-          // Reset the particle to the top of the screen if it falls off the bottom
-          dy = 0;
-          dx = _random.nextDouble() * size.width;
+          dy = 0; // Reset to top
+          dx = _random.nextDouble() * size.width; // New random starting point on x-axis
         }
+
         particle.position = Offset(dx, dy);
       }
     });
   }
+
 
   @override
   void dispose() {
