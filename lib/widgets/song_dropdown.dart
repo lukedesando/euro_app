@@ -52,8 +52,8 @@ class _SongDropdownState extends State<SongDropdown> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+@override
+Widget build(BuildContext context) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -77,10 +77,9 @@ class _SongDropdownState extends State<SongDropdown> {
             value: _selectedSong,
             icon: const Icon(Icons.arrow_downward),
             elevation: 16,
-            style: const TextStyle(color: Colors.deepPurple),
             underline: Container(
               height: 2,
-              color: Colors.deepPurpleAccent,
+              color: Theme.of(context).colorScheme.primary,
             ),
             onChanged: (String? newValue) {
               setState(() {
@@ -110,6 +109,6 @@ class _SongDropdownState extends State<SongDropdown> {
         ],
       ),
     ],
-  );
+  ); // This is where you close your Column widget correctly
 }
 }
