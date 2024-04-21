@@ -100,14 +100,14 @@ class ResultsPageState extends State<ResultsPage> {
         title: const Text('Totals from All Voters'),
         centerTitle: true,
         actions: [
-          TextButton(
+          OutlinedButton(
             onPressed: () {
               setState(() {
                 showUnvotedOnly = !showUnvotedOnly;
               });
             },
             child: Text(
-              showUnvotedOnly ? 'Show All' : "Hide Songs I Voted On",
+              showUnvotedOnly ? 'Show All' : "Hide Voted Songs",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
                 fontWeight: FontWeight.bold,
@@ -115,7 +115,7 @@ class ResultsPageState extends State<ResultsPage> {
             ),
           ),
 
-          TextButton(
+          OutlinedButton(
             onPressed: () {
               setState(() {
                 sortByCountry = !sortByCountry;
