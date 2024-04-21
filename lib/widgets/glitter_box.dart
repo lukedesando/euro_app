@@ -5,8 +5,16 @@ class GlitterParticle {
   Offset position;
   double radius;
   Color color;
+  Offset velocity;
+  String shape; // "circle" or "rectangle"
 
-  GlitterParticle({required this.position, required this.radius, required this.color});
+  GlitterParticle({
+    required this.position,
+    required this.radius,
+    required this.color,
+    this.velocity = const Offset(0, 0),
+    this.shape = "circle",
+  });
 }
 
 class GlitterPainter extends CustomPainter {
@@ -16,10 +24,46 @@ class GlitterPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final particle in particles) {
-      Paint paint = Paint()..color = particle.color;
-      canvas.drawCircle(particle.position, particle.radius, paint);
+  for (final particle in particles) {
+    Paint paint = Paint()..color = particle.color;
+    switch (particle.shape) {
+      case "rectangle":
+        Rect rect = Rect.fromCenter(
+          center: particle.position,
+          width: particle.radius * 1,
+          height: particle.radius * 3.5
+        );
+        canvas.drawRect(rect, paint);
+        break;
+      case "square":
+        Rect rect = Rect.fromCenter(
+          center: particle.position,
+          width: particle.radius * 2,
+          height: particle.radius * 2
+        );
+        canvas.drawRect(rect, paint);
+        break;
+      case "star":
+        drawStar(canvas, particle.position, particle.radius+3, paint);
+        break;
+      default: // Default to circle
+        canvas.drawCircle(particle.position, particle.radius+1, paint);
+      }
     }
+  }
+  void drawStar(Canvas canvas, Offset center, double radius, Paint paint) {
+    Path path = Path();
+    List<Offset> points = [];
+    double innerRadius = radius / 3;  // Adjust this value to make the star pointier
+    for (int i = 0; i < 10; i++) {
+      double angle = (i * 36.0) * pi / 180;
+      double r = (i % 2 == 0) ? radius : innerRadius; // Use innerRadius for inner points
+      double x = center.dx + r * cos(angle);
+      double y = center.dy + r * sin(angle);
+      points.add(Offset(x, y));
+    }
+    path.addPolygon(points, true);
+    canvas.drawPath(path, paint);
   }
 
   @override
@@ -56,38 +100,52 @@ class _GlitterBoxState extends State<GlitterBox> with SingleTickerProviderStateM
   void _initializeParticles() {
     final size = MediaQuery.of(context).size;
     _particles = List.generate(widget.numberOfParticles, (_) {
+      List<String> shapes = ["circle", "star", "square"];
+      String shape = shapes[_random.nextInt(shapes.length)];
+
       return GlitterParticle(
         position: Offset(_random.nextDouble() * size.width, _random.nextDouble() * size.height),
         radius: 1 + _random.nextDouble() * 2,
         color: Colors.primaries[_random.nextInt(Colors.primaries.length)].withOpacity(0.8),
+        velocity: Offset((_random.nextDouble() - 0.5) * 2, 1.5), // Horizontal and Vertical velocities
+        shape: shape,
       );
     });
-    setState(() {}); // Trigger a rebuild to display the particles
+    setState(() {});
   }
 
   void _updateParticles() {
     final size = MediaQuery.of(context).size;
+    const double maxHorizontalVelocity = 1; // Set the maximum horizontal velocity
+
     setState(() {
       for (final particle in _particles) {
-        // Randomly change the direction and speed
-        double horizontalMovement = (_random.nextDouble() - 0.5) * 5; // Increased random factor for side-to-side movement
-        double verticalMovement = 1 + _random.nextDouble() * 2; // Randomized falling speed
+          // Add slight random horizontal movement
+          double horizontalChange = (_random.nextDouble() - 0.5) * 0.2; // Adjust the multiplier for more or less movement
+          double newHorizontalVelocity = particle.velocity.dx + horizontalChange;
 
-        double dx = particle.position.dx + horizontalMovement;
-        double dy = particle.position.dy + verticalMovement;
+          // Clamp the horizontal velocity to the maximum
+          newHorizontalVelocity = newHorizontalVelocity.clamp(-maxHorizontalVelocity, maxHorizontalVelocity);
 
-        // Boundary check and reset position if necessary
-        if (dx < 0) dx = 0;
-        if (dx > size.width) dx = size.width;
-        if (dy > size.height) {
-          dy = 0; // Reset to top
-          dx = _random.nextDouble() * size.width; // New random starting point on x-axis
-        }
+          particle.velocity = Offset(newHorizontalVelocity, particle.velocity.dy);
 
-        particle.position = Offset(dx, dy);
+          double dx = particle.position.dx + particle.velocity.dx;
+          double dy = particle.position.dy + particle.velocity.dy;
+
+          // Wrap around horizontally and reset from top if they fall off the bottom
+          if (dx < 0) dx += size.width;
+          if (dx > size.width) dx -= size.width;
+          if (dy > size.height) {
+            dy = 0;
+            dx = _random.nextDouble() * size.width;
+            particle.velocity = Offset((_random.nextDouble() - 0.5) * 2, 1.5); // Reset horizontal velocity randomly
+          }
+
+          particle.position = Offset(dx, dy);
       }
     });
   }
+
 
 
   @override
@@ -101,7 +159,7 @@ class _GlitterBoxState extends State<GlitterBox> with SingleTickerProviderStateM
     return Stack(
       children: <Widget>[
         CustomPaint(
-          size: Size.infinite, // Cover the whole screen
+          size: Size.infinite,
           painter: GlitterPainter(particles: _particles),
         ),
         widget.child,
@@ -109,4 +167,3 @@ class _GlitterBoxState extends State<GlitterBox> with SingleTickerProviderStateM
     );
   }
 }
-
