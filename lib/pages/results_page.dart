@@ -22,6 +22,7 @@ class ResultsPageState extends State<ResultsPage> {
   Timer? _pollingTimer;
   Map<int, int> userVotes = {};
   bool showUnvotedOnly = false;
+  double flagheight = 50;
 
   @override
   void initState() {
@@ -144,15 +145,16 @@ class ResultsPageState extends State<ResultsPage> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${song['song_name']} by ${song['artist']}'),
+                Text('${song['song_name']}'),
+                Text('by ${song['artist']}'),
                 Text('My Score: ${userVotes[song['song_id']] ?? "Not Voted"}'), // Display the user's score
                 Text('Average Score: ${song['average_score']}'),
               ],
             ),
             leading: Flag.fromString(
               song['country_code'] ?? '',
-              height: 50,
-              width: 75,
+              height: flagheight,
+              width: flagheight*1.5,
             ),
           );
         },
