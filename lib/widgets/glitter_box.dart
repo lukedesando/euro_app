@@ -47,7 +47,7 @@ class GlitterPainter extends CustomPainter {
         drawStar(canvas, particle.position, particle.radius+3, paint);
         break;
       default: // Default to circle
-        canvas.drawCircle(particle.position, particle.radius+1, paint);
+        canvas.drawCircle(particle.position, particle.radius+.5, paint);
       }
     }
   }
