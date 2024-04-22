@@ -9,16 +9,17 @@ import 'package:euro_app/widgets/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
 import '../http_backend.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import '../widgets/initial_grid.dart';
 
-class ResultsPage extends StatefulWidget {
+class ResultsPageOrig extends StatefulWidget {
   final String? userName;
-  ResultsPage({super.key, this.userName});
+  ResultsPageOrig({super.key, this.userName});
 
   @override
   ResultsPageState createState() => ResultsPageState();
 }
 
-class ResultsPageState extends State<ResultsPage> {
+class ResultsPageState extends State<ResultsPageOrig> {
   List<dynamic> songs = [];
   bool sortByCountry = true; // Default sort by country
   Timer? _pollingTimer;
@@ -26,16 +27,19 @@ class ResultsPageState extends State<ResultsPage> {
   bool showUnvotedOnly = false;
   double flagheight = 50;
   late PlutoGridStateManager stateManager;
-  
+
+
   @override
   void initState() {
     super.initState();
     fetchSongs();
-    fetchVotes().then((votes) {
+    if (widget.userName != null) {
+    fetchVotes(widget.userName).then((votes) {
       setState(() {
         userVotes = votes;
       });
     });
+  }
     _startPolling();
   }
   
@@ -51,14 +55,17 @@ class ResultsPageState extends State<ResultsPage> {
     });
   }
 
-  void fetchSongs() async {
+  fetchSongs() async {
     var url = Uri.parse(songsHTTP);
     var response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
         songs = json.decode(response.body);
-        // Assume userVotes are fetched similarly or passed some other way
+        sortSongs(); // Sort songs based on the selected criteria
       });
+      // print(response.body);
+    } else {
+      // Handle server errors
     }
   }
   
@@ -73,19 +80,18 @@ class ResultsPageState extends State<ResultsPage> {
     )).toList();
   }
 
-  Future<Map<int, int>> fetchVotes() async {
-    if (widget.userName == null) return {};
-    var url = Uri.parse('$voteGetHTTP?user_name=${widget.userName}');
-    var response = await http.get(url);
-    Map<int, int> votes = {};
-    if (response.statusCode == 200) {
-      List<dynamic> voteData = json.decode(response.body);
-      for (var vote in voteData) {
-        votes[vote['song_id']] = vote['user_score'];
-      }
+  Future<Map<int, int>> fetchVotes(String? userName) async {
+  var url = Uri.parse('$voteGetHTTP?user_name=$userName');
+  var response = await http.get(url);
+  Map<int, int> userVotes = {};
+  if (response.statusCode == 200) {
+    List<dynamic> votes = json.decode(response.body);
+    for (var vote in votes) {
+      userVotes[vote['song_id']] = vote['user_score'];
     }
-    return votes;
   }
+  return userVotes;
+}
 
   sortSongs() {
   if (sortByCountry) {
@@ -101,6 +107,7 @@ class ResultsPageState extends State<ResultsPage> {
     });
   }
 }
+
 
   @override
   Widget build(BuildContext context) {
@@ -142,10 +149,11 @@ class ResultsPageState extends State<ResultsPage> {
           const LogoBlackandWhite(),
         ],
       ),
-      
-      body: songs.isEmpty
-      ? CircularProgressIndicator()
-      : SongGrid(songs:songs, userVotes: userVotes),
+      body: InitialGrid(
+        songs: songs,
+        userVotes: userVotes,
+        showUnvotedOnly: showUnvotedOnly,
+      ),
       // body: ListView.builder(
       //   itemCount: songs.length,
       //   itemBuilder: (context, index) {
