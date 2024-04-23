@@ -3,6 +3,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'http_util.dart';
 
+bool _isSnackbarActive = false;
+
+void showCustomSnackbar(String message, BuildContext context, {Color? backgroundColor}) {
+  if (!_isSnackbarActive) {
+    _isSnackbarActive = true;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: backgroundColor ?? Theme.of(context).snackBarTheme.backgroundColor,  // Use the provided color
+      ),
+    ).closed.then((reason) {
+      _isSnackbarActive = false; // Reset the flag when Snackbar is closed
+    });
+  }
+}
+
 Future<void> submitVote({
   required BuildContext context,
   required String userName,
@@ -11,13 +29,8 @@ Future<void> submitVote({
   bool xSkip = false,
   final String? songName,
 }) async {
-  if (userName == null || userName.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('You must type in your name to submit a vote.'),
-        backgroundColor: Colors.red,
-      ),
-    );
+  if (userName.isEmpty) {
+    showCustomSnackbar('You must type in your name to submit a vote.', context, backgroundColor: Colors.red);
     return;
   }
 
@@ -33,13 +46,9 @@ Future<void> submitVote({
   );
 
   if (response.statusCode == 200) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Vote with score $score submitted successfully for $songName'),
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    String successMessage = 'Vote with score $score submitted successfully for $songName';
+    showCustomSnackbar(successMessage, context);
   } else {
-    print('Failed to submit vote');
+    print('Failed to submit vote'); // Consider using showCustomSnackbar for error handling too
   }
 }
