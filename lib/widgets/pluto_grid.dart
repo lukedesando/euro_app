@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:provider/provider.dart';
+import 'theme_switch_button.dart';
 
 class SongGrid extends StatefulWidget {
   final List<dynamic> songs;
@@ -34,23 +36,28 @@ class _SongGridState extends State<SongGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return PlutoGrid(
-      columns: [
-        PlutoColumn(title: 'Country', field: 'country', type: PlutoColumnType.text()),
-        PlutoColumn(title: 'Song', field: 'song_name', type: PlutoColumnType.text()),
-        PlutoColumn(title: 'Artist', field: 'artist', type: PlutoColumnType.text()),
-        PlutoColumn(title: 'My Score', field: 'my_score', type: PlutoColumnType.text()), // Adding My Score column
-        PlutoColumn(title: 'Average Score', field: 'average_score', type: PlutoColumnType.number(format: '#,###.###')),
-      ],
-      rows: generateRows(),
-      onLoaded: (PlutoGridOnLoadedEvent event) {
-        stateManager = event.stateManager;
-      },
-      onChanged: (PlutoGridOnChangedEvent event) {
-        print(event);
-      },
-      configuration: PlutoGridConfiguration(
-        // Customize your grid configuration
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return Theme(
+      data: themeProvider.themeMode == ThemeMode.dark ? ThemeData.dark() : ThemeData.light(),
+      child: PlutoGrid(
+        columns: [
+          PlutoColumn(title: 'Country', field: 'country', type: PlutoColumnType.text()),
+          PlutoColumn(title: 'Song', field: 'song_name', type: PlutoColumnType.text()),
+          PlutoColumn(title: 'Artist', field: 'artist', type: PlutoColumnType.text()),
+          PlutoColumn(title: 'My Score', field: 'my_score', type: PlutoColumnType.text()),
+          PlutoColumn(title: 'Average Score', field: 'average_score', type: PlutoColumnType.number(format: '#,###.###')),
+        ],
+        rows: generateRows(),
+        onLoaded: (PlutoGridOnLoadedEvent event) {
+          stateManager = event.stateManager;
+        },
+        onChanged: (PlutoGridOnChangedEvent event) {
+          print(event);
+        },
+        configuration: themeProvider.themeMode == ThemeMode.dark 
+            ? PlutoGridConfiguration.dark() 
+            : PlutoGridConfiguration(),
       ),
     );
   }
