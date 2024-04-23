@@ -93,12 +93,6 @@ def vote():
         new_vote = Vote(user_name=data['user_name'], score=data['score'], song_id=data['song_id'], x_skip=x_skip)
         db.session.add(new_vote)
 
-    # Update the x_count in the Song model if x_skip is True
-    if x_skip:
-        song = Song.query.filter_by(song_id=data['song_id']).first()
-        if song:
-            song.x_count = Song.x_count + 1
-
     db.session.commit()
     return jsonify({"message": "Vote recorded"})
 
