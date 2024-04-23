@@ -3,10 +3,9 @@ import 'dart:convert';
 import 'package:euro_app/widgets/pluto_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:euro_app/widgets/nav_button.dart';
 import 'package:euro_app/widgets/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
-import '../http_backend.dart';
+import '../http_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class ResultsPage extends StatefulWidget {

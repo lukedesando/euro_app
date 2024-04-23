@@ -7,6 +7,7 @@ import '../widgets/name_input.dart';
 import '../widgets/nav_button.dart';
 import '../widgets/theme_switch_button.dart';
 import '../widgets/glitter_box.dart';
+import '../widgets/x_button.dart';
 
 import '../styles/style.dart';
 import 'package:euro_app/pages/results_page.dart';
@@ -68,16 +69,22 @@ class _HomePageState extends State<HomePage> {
                 },
                 songId: _selectedSongID ?? 0,
                 userName: currentUserName ?? '',
-              ),
-              SizedBox(height: 20),
-              ScoreSlider(onScoreChanged: _onScoreChanged),
-              SizedBox(height: 20),
+              ), SizedBox(height: 20),  
+              ScoreSlider(onScoreChanged: _onScoreChanged), SizedBox(height: 20),
               Center(
                 child: VoteButton(
                   songName: selectedSong ?? 'No Song Selected',
                   songId: _selectedSongID ?? 0,
                   userName: nameController.text,
                   score: _currentScore,
+                ),
+              ), SizedBox(height: 20),
+              Center(
+                child: XButton(
+                  songName: selectedSong ?? 'No Song Selected',
+                  userName: nameController.text,
+                  score: _currentScore,
+                  songId: _selectedSongID ?? 0,
                 ),
               ),
             ],

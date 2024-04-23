@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flag/flag.dart';
 import 'package:euro_app/widgets/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
-import '../http_backend.dart';
+import '../http_util.dart';
 
 class FavoritesPage extends StatefulWidget {
   final String? userName;
