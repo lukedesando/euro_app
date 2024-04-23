@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:euro_app/widgets/pluto_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flag/flag.dart';
 import 'package:euro_app/widgets/nav_button.dart';
 import 'package:euro_app/widgets/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
@@ -24,7 +23,6 @@ class ResultsPageState extends State<ResultsPage> {
   Timer? _pollingTimer;
   Map<int, int> userVotes = {};
   bool showUnvotedOnly = false;
-  double flagheight = 50;
   late PlutoGridStateManager stateManager;
   
   @override
@@ -60,17 +58,6 @@ class ResultsPageState extends State<ResultsPage> {
         // Assume userVotes are fetched similarly or passed some other way
       });
     }
-  }
-  
-  List<PlutoRow> generateRows(List<dynamic> songs) {
-    return songs.map((song) => PlutoRow(
-      cells: {
-        'country': PlutoCell(value: song['country']),
-        'song_name': PlutoCell(value: song['song_name']),
-        'artist': PlutoCell(value: song['artist']),
-        'average_score': PlutoCell(value: song['average_score'].toString()),
-      }
-    )).toList();
   }
 
   Future<Map<int, int>> fetchVotes() async {
@@ -109,36 +96,6 @@ class ResultsPageState extends State<ResultsPage> {
         title: const Text('Totals from All Voters'),
         centerTitle: true,
         actions: [
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                showUnvotedOnly = !showUnvotedOnly;
-              });
-            },
-            child: Text(
-              showUnvotedOnly ? 'Show All' : "Hide Voted Songs",
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          OutlinedButton(
-            onPressed: () {
-              setState(() {
-                sortByCountry = !sortByCountry;
-                sortSongs();
-              });
-            },
-            child: Text(
-              sortByCountry ? 'Sort by Score' : 'Sort Alphabetically',
-              style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
           const LogoBlackandWhite(),
         ],
       ),
