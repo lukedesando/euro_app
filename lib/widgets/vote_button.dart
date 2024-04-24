@@ -6,6 +6,7 @@ class VoteButton extends StatelessWidget {
   final String userName;
   final double score;
   final int songId;
+  final String country;
 
   const VoteButton({
     Key? key,
@@ -13,6 +14,7 @@ class VoteButton extends StatelessWidget {
     required this.userName,
     required this.score,
     required this.songId,
+    required this.country,
   }) : super(key: key);
 
   @override
@@ -23,8 +25,10 @@ class VoteButton extends StatelessWidget {
         userName: userName,
         songId: songId,
         score: score,
-        songName: songName),
-      child: Text('Vote $score for $songName'),
+        songName: songName,
+        country: country,
+        ),
+      child: Text('Vote $score for $country'),
     );
   }
 }

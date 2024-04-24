@@ -6,7 +6,7 @@ import '../http_util.dart';
 import 'favorite_button.dart';
 
 class SongDropdown extends StatefulWidget {
-  final Function(int, String) onSongSelected;
+  final Function(int, String, String) onSongSelected;
   final int songId;
   final String userName;
 
@@ -52,63 +52,63 @@ class _SongDropdownState extends State<SongDropdown> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        children: [
-          displaySelection == 'country' && displayInfo['country'] != '' && displayInfo['country_code'] != 'Unknown'
-              ? Flag.fromString(
-                  displayInfo['country_code'] ?? '',
-                  height: 50,
-                  width: 65,
-                )
-              : Container(),
-          SizedBox(width: 10),
-          Text('Song is: ${displayInfo['song_name'] ?? ''}'),
-        ],
-      ),
-      SizedBox(height: 10),
-      Row(
-        children: [
-          DropdownButton<String>(
-            value: _selectedSong,
-            icon: const Icon(Icons.arrow_downward),
-            elevation: 16,
-            underline: Container(
-              height: 2,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedSong = newValue!;
-                var selectedSong = songs.firstWhere(
-                  (song) => song[displaySelection] == newValue,
-                  orElse: () => {},
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            displaySelection == 'country' && displayInfo['country'] != '' && displayInfo['country_code'] != 'Unknown'
+                ? Flag.fromString(
+                    displayInfo['country_code'] ?? '',
+                    height: 50,
+                    width: 65,
+                  )
+                : Container(),
+            SizedBox(width: 10),
+            Text('Song is: ${displayInfo['song_name'] ?? ''}'),
+          ],
+        ),
+        SizedBox(height: 10),
+        Row(
+          children: [
+            DropdownButton<String>(
+              value: _selectedSong,
+              icon: const Icon(Icons.arrow_downward),
+              elevation: 16,
+              underline: Container(
+                height: 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedSong = newValue!;
+                  var selectedSong = songs.firstWhere(
+                    (song) => song[displaySelection] == newValue,
+                    orElse: () => {},
+                  );
+                  displayInfo['country'] = selectedSong['country'] ?? '';
+                  displayInfo['song_name'] = selectedSong['song_name'] ?? '';
+                  displayInfo['artist'] = selectedSong['artist'] ?? '';
+                  displayInfo['country_code'] = selectedSong['country_code'] ?? '';
+                  widget.onSongSelected(selectedSong['song_id'], selectedSong['song_name'], selectedSong['country']);
+                });
+              },
+              items: songs.map<DropdownMenuItem<String>>((dynamic song) {
+                return DropdownMenuItem<String>(
+                  value: song[displaySelection],
+                  child: Text(song[displaySelection]),
                 );
-                displayInfo['country'] = selectedSong['country'] ?? '';
-                displayInfo['song_name'] = selectedSong['song_name'] ?? '';
-                displayInfo['artist'] = selectedSong['artist'] ?? '';
-                displayInfo['country_code'] = selectedSong['country_code'] ?? '';
-                widget.onSongSelected(selectedSong['song_id'], selectedSong['song_name']); // Call the callback function with the song ID
-              });
-            },
-            items: songs.map<DropdownMenuItem<String>>((dynamic song) {
-              return DropdownMenuItem<String>(
-                value: song[displaySelection],
-                child: Text(song[displaySelection]),
-              );
-            }).toList(),
-          ),
-          FavoriteButton(
-            songId: widget.songId,
-            userName: widget.userName,
-          ),
-        ],
-      ),
-    ],
-  ); // This is where you close your Column widget correctly
-}
+              }).toList(),
+            ),
+            FavoriteButton(
+              songId: widget.songId,
+              userName: widget.userName,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }

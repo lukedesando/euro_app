@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   double _currentScore = 5.0; //Default score
   int? _selectedSongID;
   String? currentUserName;
+  String? selectedCountry;
   final TextEditingController nameController = TextEditingController();
 
   void _onSongChanged(String? newSongName, int? newSongId) {
@@ -61,10 +62,11 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               const Text('Select Country:'),
               SongDropdown(
-                onSongSelected: (int id, String name) {
+                onSongSelected: (int id, String name, String country) {
                   setState(() {
                     _selectedSongID = id;
                     selectedSong = name;
+                    selectedCountry = country;  // Assuming you add this state variable
                   });
                 },
                 songId: _selectedSongID ?? 0,
@@ -77,14 +79,16 @@ class _HomePageState extends State<HomePage> {
                   songId: _selectedSongID ?? 0,
                   userName: nameController.text,
                   score: _currentScore,
+                  country: selectedCountry ?? 'No Country Selected',
                 ),
               ), SizedBox(height: 20),
               Center(
                 child: XButton(
                   songName: selectedSong ?? 'No Song Selected',
+                  songId: _selectedSongID ?? 0,
                   userName: nameController.text,
                   score: _currentScore,
-                  songId: _selectedSongID ?? 0,
+                  country: selectedCountry ?? 'No Country Selected',
                 ),
               ),
             ],

@@ -23,6 +23,7 @@ void showCustomSnackbar(String message, BuildContext context, {Color? background
 
 Future<void> submitVote({
   required BuildContext context,
+  required String country,
   required String userName,
   required int songId,
   required double score,
@@ -46,7 +47,7 @@ Future<void> submitVote({
   );
 
   if (response.statusCode == 200) {
-    String successMessage = 'Vote with score $score submitted successfully for $songName';
+    String successMessage = 'Vote with score $score submitted successfully for $country';
     showCustomSnackbar(successMessage, context);
   } else {
     print('Failed to submit vote'); // Consider using showCustomSnackbar for error handling too

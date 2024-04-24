@@ -8,6 +8,7 @@ class XButton extends StatelessWidget {
   final double score;
   final int songId;
   final audioPlayer = AudioPlayer();
+  final String country;
 
   XButton({
     Key? key,
@@ -15,6 +16,7 @@ class XButton extends StatelessWidget {
     required this.userName,
     required this.score,
     required this.songId,
+    required this.country,
   }) : super(key: key);
 
   void playSound() {
@@ -34,6 +36,7 @@ class XButton extends StatelessWidget {
         score: 0,
         songName: songName,
         xSkip: true,
+        country: country,
       ),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
