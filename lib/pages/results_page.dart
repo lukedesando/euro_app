@@ -92,8 +92,8 @@ class ResultsPageState extends State<ResultsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Totals from All Voters'),
-        centerTitle: true,
+        title: const Text('Results'),
+        centerTitle: false,
         actions: [
           const LogoBlackandWhite(),
         ],
