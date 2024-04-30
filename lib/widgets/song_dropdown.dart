@@ -6,15 +6,17 @@ import '../http_util.dart';
 import 'favorite_button.dart';
 
 class SongDropdown extends StatefulWidget {
-  final Function(int, String, String) onSongSelected;
+  final Function(int, String, String, int) onSongSelected;
   final int songId;
   final String userName;
+  final int x_count;
 
   const SongDropdown({
     Key? key,
     required this.onSongSelected,
     required this.songId,
     required this.userName,
+    required this.x_count,
   }) : super(key: key);
 
   @override
@@ -26,10 +28,11 @@ class _SongDropdownState extends State<SongDropdown> {
   List<dynamic> songs = [];
   String? _selectedSong;
 
-  Map<String, String> displayInfo = {
+  Map<String, dynamic> displayInfo = {
     'country': '',
     'song_name': '',
     'artist': '',
+    'x_count': 0,
   };
   String displaySelection = 'country'; // Options: 'country', 'song_name', 'artist'
 
@@ -86,13 +89,19 @@ class _SongDropdownState extends State<SongDropdown> {
                   _selectedSong = newValue!;
                   var selectedSong = songs.firstWhere(
                     (song) => song[displaySelection] == newValue,
-                    orElse: () => {},
+                    orElse: () => <String, dynamic>{},
                   );
                   displayInfo['country'] = selectedSong['country'] ?? '';
                   displayInfo['song_name'] = selectedSong['song_name'] ?? '';
                   displayInfo['artist'] = selectedSong['artist'] ?? '';
                   displayInfo['country_code'] = selectedSong['country_code'] ?? '';
-                  widget.onSongSelected(selectedSong['song_id'], selectedSong['song_name'], selectedSong['country']);
+                  displayInfo['x_count'] = selectedSong['x_count'] ?? 0;
+                  widget.onSongSelected(
+                    selectedSong['song_id'],
+                    selectedSong['song_name'],
+                    selectedSong['country'],
+                    selectedSong['x_count']
+                    );
                 });
               },
               items: songs.map<DropdownMenuItem<String>>((dynamic song) {

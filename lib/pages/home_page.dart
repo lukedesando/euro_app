@@ -25,11 +25,13 @@ class _HomePageState extends State<HomePage> {
   String? currentUserName;
   String? selectedCountry;
   final TextEditingController nameController = TextEditingController();
+  int? x_count;
 
-  void _onSongChanged(String? newSongName, int? newSongId) {
+  void _onSongChanged(String? newSongName, int? newSongId, int newXCount) {
     setState(() {
       selectedSong = newSongName;
       _selectedSongID = newSongId;
+      x_count = newXCount;
     });
   }
 
@@ -62,15 +64,17 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               const Text('Select Country:'),
               SongDropdown(
-                onSongSelected: (int id, String name, String country) {
+                onSongSelected: (int id, String name, String country, int newXCount) {
                   setState(() {
                     _selectedSongID = id;
                     selectedSong = name;
-                    selectedCountry = country;  // Assuming you add this state variable
+                    selectedCountry = country;
+                    x_count = newXCount;  // Assuming you add this state variable
                   });
                 },
                 songId: _selectedSongID ?? 0,
                 userName: currentUserName ?? '',
+                x_count: x_count ?? 0,
               ), SizedBox(height: 20),  
               ScoreSlider(onScoreChanged: _onScoreChanged), SizedBox(height: 20),
               Center(
@@ -91,6 +95,7 @@ class _HomePageState extends State<HomePage> {
                   country: selectedCountry ?? 'No Country Selected',
                 ),
               ),
+              Center(child: Text('Votes to Skip: $x_count'),)
             ],
           ),
         ),
