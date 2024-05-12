@@ -7,3 +7,6 @@ String favoriteAddHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/add_favorit
 String favoriteRemoveHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/remove_favorite';
 String favoriteGetHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/get_favorites/';
 String websocketHTTP = 'ws://${Config.DB_HOST}:${Config.DB_PORT}';
+String ioHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/io';
+String xCountHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/initial_xcount';
+String xCountGetHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/get_xcount';

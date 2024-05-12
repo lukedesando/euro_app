@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'widgets/buttons/theme_switch_button.dart';
+import 'models/x_count_model.dart';
 
 import 'package:euro_app/pages/home_page.dart';
+import 'global.dart';
 
 void main() {
-  runApp(ChangeNotifierProvider<ThemeProvider>(
-      create: (context) => ThemeProvider(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>(
+          create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider<XCountModel>(
+          create: (context) => Global.xCountModel,
+        ),
+      ],
       child: MyApp(),
     ),
-  // runApp(MyApp()
   );
 }
 

@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, emit
+import requests
 
 from dotenv import load_dotenv
 import os
@@ -10,12 +12,14 @@ import logging
 
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 load_dotenv()
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
+DB_PORT = os.getenv("DB_PORT")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 db = SQLAlchemy(app)
@@ -83,17 +87,24 @@ class Vote(db.Model):
 @app.route('/votepost', methods=['POST'])
 def vote():
     data = request.json
-    x_skip = data.get('x_skip', False)  # Retrieve the x_skip value from the request
+    x_skip = data.get('x_skip', False)
 
     existing_vote = Vote.query.filter_by(user_name=data['user_name'], song_id=data['song_id']).first()
     if existing_vote:
         existing_vote.score = data['score']
-        existing_vote.x_skip = x_skip  # Update the x_skip value
+        existing_vote.x_skip = x_skip
     else:
         new_vote = Vote(user_name=data['user_name'], score=data['score'], song_id=data['song_id'], x_skip=x_skip)
         db.session.add(new_vote)
 
     db.session.commit()
+
+    # Fetch the updated x_count
+    updated_x_count = Song.query.filter_by(song_id=data['song_id']).first().x_count
+    print("Preparing to emit x_count_update with:", {'song_id': data['song_id'], 'x_count': updated_x_count})
+    # Emit the updated x_count to all connected clients
+    socketio.emit('x_count_update', {'song_id': data['song_id'], 'x_count': updated_x_count})
+
     return jsonify({"message": "Vote recorded"})
 
 @app.route('/voteget', methods=['GET'])
@@ -165,7 +176,36 @@ def get_favorites(user_name):
     ])
     return set_no_cache_headers(response)
 
+# SKIP COUNT
 
+@app.route('/update_xcount', methods=['POST'])
+def handle_xcount_update():
+    data = request.json
+    new_x_count = data.get('x_count')
+    if new_x_count is None:
+        return jsonify({'error': 'Missing x_count parameter'}), 400
+
+    # Emitting new x_count to all connected clients
+    print("Emitting x_count_update", {'song_id': data['song_id'], 'x_count': new_x_count})
+    socketio.emit('x_count_update', {'x_count': new_x_count})
+    return jsonify({'success': True}), 200
+
+def trigger_xcount_update(new_x_count):
+    url = f'http://{DB_HOST}:{DB_PORT}/update_xcount'  # Use the appropriate URL
+    data = {'x_count': new_x_count}
+    response = requests.post(url, json=data)
+    if response.status_code == 200:
+        print("Webhook triggered successfully.")
+    else:
+        print("Failed to trigger webhook.")
+
+@app.route('/get_xcount/<int:song_id>', methods=['GET'])
+def get_xcount(song_id):
+    song = Song.query.filter_by(song_id=song_id).first()
+    if song:
+        return jsonify({'x_count': song.x_count})
+    else:
+        return jsonify({'error': 'Song not found'}), 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app=app, host='0.0.0.0', port=DB_PORT, debug=True)
