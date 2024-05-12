@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flag/flag.dart';
-import 'package:euro_app/widgets/theme_switch_button.dart';
+import 'package:euro_app/widgets/buttons/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
 import '../http_util.dart';
 import 'package:pluto_grid/pluto_grid.dart';
-import '../widgets/initial_grid.dart';
+import '../widgets/grids/initial_grid.dart';
 
 class ResultsPageOrig extends StatefulWidget {
   final String? userName;

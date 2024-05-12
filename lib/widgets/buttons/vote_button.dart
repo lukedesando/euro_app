@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../vote_util.dart';
+import '../../vote_util.dart';
 
 class VoteButton extends StatelessWidget {
   final String songName;

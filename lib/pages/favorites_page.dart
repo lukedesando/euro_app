@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:euro_app/widgets/spotify_button.dart';
+import 'package:euro_app/widgets/buttons/spotify_button.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flag/flag.dart';
-import 'package:euro_app/widgets/theme_switch_button.dart';
+import 'package:euro_app/widgets/buttons/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
 import '../http_util.dart';
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'widgets/theme_switch_button.dart';
+import 'widgets/buttons/theme_switch_button.dart';
 
 import 'package:euro_app/pages/home_page.dart';
 

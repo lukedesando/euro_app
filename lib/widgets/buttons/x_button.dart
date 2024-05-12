@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../vote_util.dart';
+import '../../vote_util.dart';
 
 class XButton extends StatelessWidget {
   final String songName;
