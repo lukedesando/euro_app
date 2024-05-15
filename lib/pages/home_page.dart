@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const appbar_euro(title: 'Vote for Eurovision Song'),
+      appBar: const AppBarEuro(title: 'Vote for Eurovision Song'),
       body: GlitterBox(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

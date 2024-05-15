@@ -30,6 +30,51 @@ def set_no_cache_headers(response):
     response.headers['Expires'] = '0'  # Proxies.
     return response
 
+class Results(db.Model):
+    __tablename__ = 'final_results'
+
+    song_id = db.Column(db.Integer, db.ForeignKey('songs.song_id'), primary_key=True)
+    country = db.Column(db.String(100), nullable=False)
+    totalPoints = db.Column(db.Integer, nullable=False)
+    juryPoints = db.Column(db.Integer, nullable=False)
+    televotingPoints = db.Column(db.Integer, nullable=False)
+    place = db.Column(db.Integer, nullable=False)
+
+    def to_dict(self):
+        return {
+            'song_id': self.song_id,
+            'country': self.country,
+            'totalPoints': self.totalPoints,
+            'juryPoints': self.juryPoints,
+            'televotingPoints': self.televotingPoints,
+            'place': self.place
+        }
+    
+@app.route('/final_results', methods=['GET'])
+def get_final_results():
+    results = db.session.query(
+        Results,
+        Song,
+        Vote
+    ).outerjoin(Song, Results.song_id == Song.song_id)\
+     .outerjoin(Vote, Results.song_id == Vote.song_id).all()
+    
+    response = jsonify([
+        {
+            'song_id': result.Results.song_id,
+            'country': result.Results.country,
+            'total_points': result.Results.totalPoints,
+            'jury_points': result.Results.juryPoints,
+            'televoting_points': result.Results.televotingPoints,
+            'place': result.Results.place,
+            'song_name': result.Song.song_name,
+            'artist': result.Song.artist,
+            'average_score': result.Song.average_score,
+            'user_score': result.Vote.score if result.Vote else 'Not Voted'
+        } for result in results
+    ])
+    return set_no_cache_headers(response)
+
 class Song(db.Model):
     __tablename__ = 'songs'
     song_id = db.Column(db.Integer, primary_key=True)

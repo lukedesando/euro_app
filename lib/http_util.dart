@@ -10,3 +10,4 @@ String websocketHTTP = 'ws://${Config.DB_HOST}:${Config.DB_PORT}';
 String ioHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}';
 String xCountUpdateHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/update_xcount';
 String xCountGetHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/get_xcount';
+String finalResultsHTTP = 'http://${Config.DB_HOST}:${Config.DB_PORT}/final_results';
