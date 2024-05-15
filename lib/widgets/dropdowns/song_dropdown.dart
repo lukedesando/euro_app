@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:flag/flag.dart';
 import '../../http_util.dart';
 import '../buttons/favorite_button.dart';
+import 'package:euro_app/global.dart';
+import 'package:provider/provider.dart';
 
 class SongDropdown extends StatefulWidget {
   final Function(int, String, String, int) onSongSelected;
@@ -57,6 +59,7 @@ class _SongDropdownState extends State<SongDropdown> {
 
   @override
   Widget build(BuildContext context) {
+    int? currentSongId = Provider.of<SongSelection>(context, listen: false).selectedSongId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -91,6 +94,11 @@ class _SongDropdownState extends State<SongDropdown> {
                     (song) => song[displaySelection] == newValue,
                     orElse: () => <String, dynamic>{},
                   );
+                  if (selectedSong.isNotEmpty) {
+                    _selectedSong = newValue;
+                    // updateDisplayInfo(selectedSong);
+                    Global.songSelection.setSelectedSongId(selectedSong['song_id']);
+                  }
                   displayInfo['country'] = selectedSong['country'] ?? '';
                   displayInfo['song_name'] = selectedSong['song_name'] ?? '';
                   displayInfo['artist'] = selectedSong['artist'] ?? '';

@@ -179,25 +179,23 @@ def get_favorites(user_name):
 # SKIP COUNT
 
 @app.route('/update_xcount', methods=['POST'])
-def handle_xcount_update():
-    data = request.json
-    new_x_count = data.get('x_count')
-    if new_x_count is None:
-        return jsonify({'error': 'Missing x_count parameter'}), 400
+def update_xcount():
+    # Example of handling an update, you need to adapt this to your actual data handling
+    data = request.get_json()
+    song_id = data['song_id']
+    new_x_count = data['new_x_count']
+    
+    # Update the database here
+    song = Song.query.get(song_id)
+    if song and song.x_count != new_x_count:
+        song.x_count = new_x_count
+        db.session.commit()
+        
+        # Emit the new x_count to all clients
+        socketio.emit('x_count_update', {'song_id': song_id, 'x_count': new_x_count})
+        return jsonify(success=True), 200
+    return jsonify(success=False, message="No update needed (Server level)"), 200
 
-    # Emitting new x_count to all connected clients
-    print("Emitting x_count_update", {'song_id': data['song_id'], 'x_count': new_x_count})
-    socketio.emit('x_count_update', {'x_count': new_x_count})
-    return jsonify({'success': True}), 200
-
-def trigger_xcount_update(new_x_count):
-    url = f'http://{DB_HOST}:{DB_PORT}/update_xcount'  # Use the appropriate URL
-    data = {'x_count': new_x_count}
-    response = requests.post(url, json=data)
-    if response.status_code == 200:
-        print("Webhook triggered successfully.")
-    else:
-        print("Failed to trigger webhook.")
 
 @app.route('/get_xcount/<int:song_id>', methods=['GET'])
 def get_xcount(song_id):
@@ -206,6 +204,8 @@ def get_xcount(song_id):
         return jsonify({'x_count': song.x_count})
     else:
         return jsonify({'error': 'Song not found'}), 404
+    
+
 
 if __name__ == '__main__':
     socketio.run(app=app, host='0.0.0.0', port=DB_PORT, debug=True)
