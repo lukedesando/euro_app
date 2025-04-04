@@ -49,7 +49,7 @@ class _SongGridState extends State<FinalsGrid> {
           PlutoColumn(title: 'Jury Points', field: 'jury_points', type: PlutoColumnType.text()),
           PlutoColumn(title: 'Televoting Points', field: 'televoting_points', type: PlutoColumnType.text()),
           PlutoColumn(title: 'Final Place', field: 'place', type: PlutoColumnType.text()),
-          PlutoColumn(title: 'Average Score', field: 'average_score', type: PlutoColumnType.number(format: '#,###.###')),
+          PlutoColumn(title: 'Our Score', field: 'average_score', type: PlutoColumnType.number(format: '#,###.###')),
           PlutoColumn(title: 'My Score', field: 'my_score', type: PlutoColumnType.text()),
         ],
         rows: generateRows(),
