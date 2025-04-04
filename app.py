@@ -239,6 +239,8 @@ def update_xcount():
         # Emit the new x_count to all clients
         socketio.emit('x_count_update', {'song_id': song_id, 'x_count': new_x_count})
         return jsonify(success=True), 200
+    else:
+        db.session.rollback()
     return jsonify(success=False, message="No update needed (Server level)"), 200
 
 

@@ -9,6 +9,7 @@ class XCountModel extends ChangeNotifier {
   int get xCount => _xCount;
   bool _initialized = false;
   Timer? _pollingTimer;
+  Timer? _debounce;
 
   void initialize(int songId) {
     if (!_initialized) {
@@ -34,17 +35,16 @@ class XCountModel extends ChangeNotifier {
       print("Failed to fetch initial x_count: $e");
     }
   }
-
+  
   void updateXCount(int newCount, int songId) {
-    print("Trying to update xCount from $_xCount to $newCount");
     if (_xCount != newCount) {
       _xCount = newCount;
-      print("XCountModel updated: $_xCount");
       notifyListeners();
-    } else {
-      print("No update needed as the value is the same");
+      _debounce?.cancel();
+      _debounce = Timer(Duration(milliseconds: 300), () {
+        sendUpdateToServer(newCount, songId);
+      });
     }
-    sendUpdateToServer(newCount, songId);
   }
 
   Future<void> sendUpdateToServer(int newCount, int songId) async {
