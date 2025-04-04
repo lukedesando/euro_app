@@ -68,15 +68,38 @@ class ResultsPageState extends State<ResultsPageOrig> {
   }
   
   List<PlutoRow> generateRows(List<dynamic> songs) {
-    return songs.map((song) => PlutoRow(
-      cells: {
-        'country': PlutoCell(value: song['country']),
-        'song_name': PlutoCell(value: song['song_name']),
-        'artist': PlutoCell(value: song['artist']),
-        'average_score': PlutoCell(value: song['average_score'].toString()),
-      }
-    )).toList();
+  // Create a map to aggregate data by country
+  Map<String, Map<String, dynamic>> aggregatedData = {};
+
+  for (var song in songs) {
+    String country = song['country'];
+    if (!aggregatedData.containsKey(country)) {
+      aggregatedData[country] = {
+        'country': country,
+        'song_count': 0,
+        'total_score': 0,
+        'average_score': 0,
+      };
+    }
+    aggregatedData[country]?['song_count'] += 1;
+    aggregatedData[country]?['total_score'] += song['average_score'];
   }
+
+  // Calculate average scores
+  aggregatedData.forEach((key, value) {
+    value['average_score'] = (value['total_score'] / value['song_count']).toStringAsFixed(2);
+  });
+
+  // Convert aggregated data into PlutoGrid rows
+  return aggregatedData.values.map((data) => PlutoRow(
+    cells: {
+      'country': PlutoCell(value: data['country']),
+      'song_count': PlutoCell(value: data['song_count'].toString()),
+      'average_score': PlutoCell(value: data['average_score']),
+    }
+  )).toList();
+}
+
 
   Future<Map<int, int>> fetchVotes(String? userName) async {
   var url = Uri.parse('$voteGetHTTP?user_name=$userName');
