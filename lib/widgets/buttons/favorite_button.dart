@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:euro_app/http_util.dart';
+import 'package:euro_app/services/api_endpoints.dart';
 
 class FavoriteButton extends StatefulWidget {
   final int songId;
@@ -25,22 +25,32 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     super.initState();
     _checkIfFavorited();
   }
-  
+
   @override
   void didUpdateWidget(FavoriteButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.songId != oldWidget.songId) {
+    if (widget.songId != oldWidget.songId ||
+        widget.userName != oldWidget.userName) {
       _checkIfFavorited();
     }
   }
-  
+
   void _checkIfFavorited() async {
+    if (widget.userName.isEmpty || widget.songId == 0) {
+      setState(() {
+        _isFavorited = false;
+      });
+      return;
+    }
+
     final url = Uri.parse('$favoriteGetHTTP/${widget.userName}');
     final response = await http.get(url);
+    if (!mounted) return;
 
     if (response.statusCode == 200) {
       List<dynamic> favoritesJson = json.decode(response.body);
-      List<int> favoriteSongIds = favoritesJson.map((fav) => fav['song_id'] as int).toList();
+      List<int> favoriteSongIds =
+          favoritesJson.map((fav) => fav['song_id'] as int).toList();
       setState(() {
         _isFavorited = favoriteSongIds.contains(widget.songId);
       });
@@ -50,16 +60,15 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   }
 
   void _toggleFavorite() async {
-    if (widget.userName == null || widget.userName.isEmpty) {
-    // Show a Snackbar error message if the username is null or empty
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('You must type in your name to favorite a song.'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
+    if (widget.userName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You must type in your name to favorite a song.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     final url = _isFavorited
         ? Uri.parse(favoriteRemoveHTTP)
@@ -73,6 +82,8 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         'song_id': widget.songId,
       }),
     );
+
+    if (!mounted) return;
 
     if (response.statusCode == 200) {
       setState(() {
@@ -99,7 +110,7 @@ class FavoritesList extends StatelessWidget {
   const FavoritesList({Key? key, required this.userName}) : super(key: key);
 
   Future<List<int>> _fetchFavorites() async {
-    final url = Uri.parse('$favoriteGetHTTP/${this.userName}');
+    final url = Uri.parse('$favoriteGetHTTP/$userName');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

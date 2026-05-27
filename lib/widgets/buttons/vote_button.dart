@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../vote_util.dart';
+import '../../services/vote_service.dart';
 
 class VoteButton extends StatelessWidget {
   final String songName;
@@ -22,8 +22,8 @@ class VoteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        submitVote(
+      onPressed: () async {
+        final submitted = await submitVote(
           context: context,
           userName: userName,
           songId: songId,
@@ -31,7 +31,9 @@ class VoteButton extends StatelessWidget {
           songName: songName,
           country: country,
         );
-        onUpdate(); // Call the callback to update the xCount
+        if (submitted) {
+          onUpdate();
+        }
       },
       child: Text('Vote $score for $country'),
     );

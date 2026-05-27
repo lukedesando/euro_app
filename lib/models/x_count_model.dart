@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http; // Import the http package
-import 'package:euro_app/http_util.dart';
+import 'package:euro_app/services/api_endpoints.dart';
 import 'dart:convert';
 
 class XCountModel extends ChangeNotifier {
@@ -15,7 +15,7 @@ class XCountModel extends ChangeNotifier {
     if (!_initialized) {
       initializeXCount(songId);
       startPolling(songId);
-      _initialized = true;  // Prevent re-initialization
+      _initialized = true; // Prevent re-initialization
     }
   }
 
@@ -25,17 +25,24 @@ class XCountModel extends ChangeNotifier {
       var response = await http.get(url);
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        _xCount = data['x_count'];
-        notifyListeners();  // This method updates the UI and other listeners
+        setXCountFromServer(data['x_count']);
         print("XCountModel initialized: $_xCount");
       } else {
-        print('Failed to fetch initial x_count with status: ${response.statusCode}.');
+        print(
+            'Failed to fetch initial x_count with status: ${response.statusCode}.');
       }
     } catch (e) {
       print("Failed to fetch initial x_count: $e");
     }
   }
-  
+
+  void setXCountFromServer(int newCount) {
+    if (_xCount == newCount) return;
+
+    _xCount = newCount;
+    notifyListeners();
+  }
+
   void updateXCount(int newCount, int songId) {
     if (_xCount != newCount) {
       _xCount = newCount;
@@ -49,7 +56,7 @@ class XCountModel extends ChangeNotifier {
 
   Future<void> sendUpdateToServer(int newCount, int songId) async {
     try {
-      var url = Uri.parse(xCountUpdateHTTP);  // Your server URL
+      var url = Uri.parse(xCountUpdateHTTP); // Your server URL
       var response = await http.post(
         url,
         headers: <String, String>{
@@ -64,7 +71,8 @@ class XCountModel extends ChangeNotifier {
       if (response.statusCode == 200) {
         print("Server updated successfully.");
       } else {
-        print("Failed to update server. Status code: ${response.statusCode}. Response: ${response.body}");
+        print(
+            "Failed to update server. Status code: ${response.statusCode}. Response: ${response.body}");
       }
     } catch (e) {
       print("Failed to send update to server: $e");
@@ -79,9 +87,7 @@ class XCountModel extends ChangeNotifier {
         if (response.statusCode == 200) {
           var data = json.decode(response.body);
           int newXCount = data['x_count'];
-          if (_xCount != newXCount) {
-            updateXCount(newXCount, songId);
-          }
+          setXCountFromServer(newXCount);
         } else {
           print('Failed to fetch x_count with status: ${response.statusCode}.');
         }

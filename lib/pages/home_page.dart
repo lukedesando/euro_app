@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:euro_app/Global.dart';
+import 'package:euro_app/global.dart';
 import 'package:euro_app/models/x_count_model.dart';
 import 'package:euro_app/services/socket_service.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +19,8 @@ import 'package:euro_app/pages/results_page.dart';
 import 'package:euro_app/pages/favorites_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -32,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController nameController = TextEditingController();
   late final SocketService _socketService;
   bool _showGlitter = false;
+  Timer? _glitterTimer;
 
   @override
   void initState() {
@@ -42,28 +45,22 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _glitterTimer?.cancel();
+    nameController.dispose();
     _socketService.dispose();
     super.dispose();
   }
 
-  void _onSongChanged(int id, String name, String country, int newXCount) {
+  Future<void> _onSongChanged(
+      int id, String name, String country, int newXCount) async {
     setState(() {
       _selectedSongID = id;
       selectedSong = name;
       selectedCountry = country;
-      // Update the global selectedSongId
       Global.songSelection.setSelectedSongId(id);
-      setState(() {
-      // Trigger Consumer update
-      });
     });
 
-    // Fetch and initialize xCount from the database
-    Global.xCountModel.initializeXCount(id).then((_) {
-      setState(() {
-        // Force a rebuild to ensure the correct xCount is displayed
-      });
-    });
+    await Global.xCountModel.initializeXCount(id);
   }
 
   void _onScoreChanged(double newScore) {
@@ -82,34 +79,16 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _showGlitter = true; // Show glitter effect
     });
-    // Hide glitter effect after 2 seconds
-    Timer(Duration(seconds: 4), () {
+    _glitterTimer?.cancel();
+    _glitterTimer = Timer(const Duration(seconds: 4), () {
+      if (!mounted) return;
       setState(() {
         _showGlitter = false;
       });
     });
-
-    // Perform the vote update logic
-    // Update the xCountModel after voting
-    setState(() {
-      // Trigger Consumer update
-    });
   }
 
-
-  void _onXButtonPressed() {
-    // Update the xCountModel after voting
-    setState(() {
-      // Trigger Consumer update
-    });
-  }
-
-  void _xCountUpdated() {
-    // Update the xCountModel after voting
-    setState(() {
-      // Trigger Consumer update
-    });
-  }
+  void _onXButtonPressed() {}
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +99,8 @@ class _HomePageState extends State<HomePage> {
           _buildContent(),
           if (_showGlitter)
             GlitterBox(
-              child: Container(), // Empty container since GlitterBox is an effect overlay
+              child:
+                  Container(), // Empty container since GlitterBox is an effect overlay
             ),
         ],
       ),
@@ -143,70 +123,58 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   Widget _buildContent() {
-  return Padding(
-    padding: const EdgeInsets.all(16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        NameInputField(
-          controller: nameController,
-          onNameChanged: _onNameChanged,
-        ),
-        const SizedBox(height: 20),
-        const Text('Select Country:'),
-        SongDropdown(
-          onSongSelected: _onSongChanged,
-          songId: _selectedSongID ?? 0,
-          userName: currentUserName ?? '',
-          x_count: Global.xCountModel.xCount, // Use global x_count
-        ),
-        const SizedBox(height: 20),
-        ScoreSlider(onScoreChanged: _onScoreChanged),
-        const SizedBox(height: 20),
-        Center(
-          child: VoteButton(
-            songName: selectedSong ?? 'No Song Selected',
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          NameInputField(
+            controller: nameController,
+            onNameChanged: _onNameChanged,
+          ),
+          const SizedBox(height: 20),
+          const Text('Select Country:'),
+          SongDropdown(
+            onSongSelected: _onSongChanged,
             songId: _selectedSongID ?? 0,
-            userName: nameController.text,
-            score: _currentScore,
-            country: selectedCountry ?? 'No Country Selected',
-            onUpdate: _onVoteButtonPressed,
+            userName: currentUserName ?? '',
+            x_count: Global.xCountModel.xCount, // Use global x_count
           ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: XButton(
-            songName: selectedSong ?? 'No Song Selected',
-            songId: _selectedSongID ?? 0,
-            userName: nameController.text,
-            score: _currentScore,
-            country: selectedCountry ?? 'No Country Selected',
-            onUpdate: _onXButtonPressed,
+          const SizedBox(height: 20),
+          ScoreSlider(onScoreChanged: _onScoreChanged),
+          const SizedBox(height: 20),
+          Center(
+            child: VoteButton(
+              songName: selectedSong ?? 'No Song Selected',
+              songId: _selectedSongID ?? 0,
+              userName: nameController.text,
+              score: _currentScore,
+              country: selectedCountry ?? 'No Country Selected',
+              onUpdate: _onVoteButtonPressed,
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        Center(
-          child: FutureBuilder<void>(
-            future: Global.xCountModel.initializeXCount(_selectedSongID ?? 0),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error loading xCount');
-              } else {
-                return Consumer<XCountModel>(
-                  builder: (context, xCountModel, child) {
-                    return Text('Votes to Skip: ${xCountModel.xCount}');
-                  },
-                );
-              }
-            },
+          const SizedBox(height: 20),
+          Center(
+            child: XButton(
+              songName: selectedSong ?? 'No Song Selected',
+              songId: _selectedSongID ?? 0,
+              userName: nameController.text,
+              score: _currentScore,
+              country: selectedCountry ?? 'No Country Selected',
+              onUpdate: _onXButtonPressed,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 20),
+          Center(
+            child: Consumer<XCountModel>(
+              builder: (context, xCountModel, child) {
+                return Text('Votes to Skip: ${xCountModel.xCount}');
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

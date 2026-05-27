@@ -1,0 +1,4 @@
+{
+  "API_HOST": "your_lan_ip_or_hostname",
+  "API_PORT": "5000"
+}

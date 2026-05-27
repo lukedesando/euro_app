@@ -9,10 +9,14 @@ import 'package:euro_app/pages/home_page.dart';
 import 'global.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:euro_app/http_util.dart';
+import 'package:euro_app/config/runtime_config.dart';
+import 'package:euro_app/services/api_endpoints.dart';
 import 'package:euro_app/services/socket_service.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await RuntimeConfig.load();
+
   runApp(
     MultiProvider(
       providers: [
@@ -31,7 +35,6 @@ void main() {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,15 +49,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class WebSocket extends StatefulWidget{
+class WebSocket extends StatefulWidget {
   @override
   _WebSocketState createState() => _WebSocketState();
 }
 
-class _WebSocketState extends State<WebSocket>{
+class _WebSocketState extends State<WebSocket> {
   final WebSocketChannel channel = IOWebSocketChannel.connect(websocketHTTP);
 
-@override
+  @override
   Widget build(BuildContext context) {
     return Container(
       child: StreamBuilder(
@@ -62,12 +65,10 @@ class _WebSocketState extends State<WebSocket>{
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             SocketService().handleXCountUpdate(snapshot.data);
-            }
+          }
           return Text(snapshot.data.toString());
         },
       ),
     );
-    
   }
-
 }

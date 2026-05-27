@@ -1,28 +1,25 @@
 import 'dart:convert';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:euro_app/http_util.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:euro_app/services/api_endpoints.dart';
 import 'package:euro_app/global.dart';
-import 'package:euro_app/models/x_count_model.dart';
 
 class SocketService {
-  late IO.Socket socket;
+  io.Socket? _socket;
 
-  SocketService() {
-    createSocketConnection();
-  }
+  SocketService();
 
   void createSocketConnection() {
-    socket = IO.io(
-      ioHTTP,  // Ensure this is your correct server URL
-      IO.OptionBuilder()
-        .setTransports(['websocket']) // Use WebSocket transport
-        // .enableAutoConnect()         // Disable auto-connect
-        .build()
-    );
+    if (_socket != null) return;
 
-   socket.onConnect((_) {
+    final socket = io.io(
+        ioHTTP,
+        io.OptionBuilder()
+            .setTransports(['websocket']) // Use WebSocket transport
+            .build());
+    _socket = socket;
+
+    socket.onConnect((_) {
       print('Connected to server via WebSocket.');
-      // socket.connect();  // Ensure the connection is established
     });
 
     socket.on('x_count_update', (data) {
@@ -33,7 +30,7 @@ class SocketService {
       int songId = data['song_id'];
       int xCount = data['x_count'];
       if (Global.songSelection.selectedSongId == songId) {
-        Global.xCountModel.updateXCount(xCount, songId);
+        Global.xCountModel.setXCountFromServer(xCount);
       }
     });
 
@@ -50,7 +47,7 @@ class SocketService {
 
       // Check if the updated song ID matches the currently selected song ID
       if (Global.songSelection.selectedSongId == songId) {
-        Global.xCountModel.updateXCount(xCount, songId);
+        Global.xCountModel.setXCountFromServer(xCount);
         print("Updated xCount for song ID $songId to $xCount.");
       }
     } catch (e) {
@@ -59,10 +56,14 @@ class SocketService {
   }
 
   void dispose() {
+    final socket = _socket;
+    if (socket == null) return;
+
     if (socket.connected) {
       socket.disconnect();
     }
     socket.dispose();
+    _socket = null;
     print("Socket disposed.");
   }
 }

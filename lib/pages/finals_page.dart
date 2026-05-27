@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:euro_app/widgets/buttons/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
-import '../http_util.dart';
+import '../services/api_endpoints.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class FinalsPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class ResultsPageState extends State<FinalsPage> {
   Map<int, int> userVotes = {};
   bool showUnvotedOnly = false;
   late PlutoGridStateManager stateManager;
-  
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +35,7 @@ class ResultsPageState extends State<FinalsPage> {
     });
     _startPolling();
   }
-  
+
   @override
   void dispose() {
     _pollingTimer?.cancel();
@@ -74,19 +74,19 @@ class ResultsPageState extends State<FinalsPage> {
   }
 
   sortSongs() {
-  if (sortByCountry) {
-    songs.sort((a, b) => a['country'].compareTo(b['country']));
-  } else {
-    songs.sort((a, b) {
-      int scoreComparison = b['average_score'].compareTo(a['average_score']);
-      if (scoreComparison != 0) {
-        return scoreComparison;
-      } else {
-        return a['country'].compareTo(b['country']);
-      }
-    });
+    if (sortByCountry) {
+      songs.sort((a, b) => a['country'].compareTo(b['country']));
+    } else {
+      songs.sort((a, b) {
+        int scoreComparison = b['average_score'].compareTo(a['average_score']);
+        if (scoreComparison != 0) {
+          return scoreComparison;
+        } else {
+          return a['country'].compareTo(b['country']);
+        }
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -99,16 +99,16 @@ class ResultsPageState extends State<FinalsPage> {
         ],
       ),
       body: songs.isEmpty
-      ? CircularProgressIndicator()
-      : FinalsGrid(songs:songs, userVotes: userVotes),
+          ? CircularProgressIndicator()
+          : FinalsGrid(songs: songs, userVotes: userVotes),
       bottomNavigationBar: BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ThemeSwitcherButton(),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ThemeSwitcherButton(),
+          ],
+        ),
       ),
-    ),
     );
   }
 }

@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:flag/flag.dart';
 import 'package:euro_app/widgets/buttons/theme_switch_button.dart';
 import 'package:euro_app/styles/style.dart';
-import '../http_util.dart';
+import '../services/api_endpoints.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import '../widgets/grids/initial_grid.dart';
 
@@ -26,21 +25,20 @@ class ResultsPageState extends State<ResultsPageOrig> {
   double flagheight = 50;
   late PlutoGridStateManager stateManager;
 
-
   @override
   void initState() {
     super.initState();
     fetchSongs();
     if (widget.userName != null) {
-    fetchVotes(widget.userName).then((votes) {
-      setState(() {
-        userVotes = votes;
+      fetchVotes(widget.userName).then((votes) {
+        setState(() {
+          userVotes = votes;
+        });
       });
-    });
-  }
+    }
     _startPolling();
   }
-  
+
   @override
   void dispose() {
     _pollingTimer?.cancel();
@@ -66,69 +64,68 @@ class ResultsPageState extends State<ResultsPageOrig> {
       // Handle server errors
     }
   }
-  
+
   List<PlutoRow> generateRows(List<dynamic> songs) {
-  // Create a map to aggregate data by country
-  Map<String, Map<String, dynamic>> aggregatedData = {};
+    // Create a map to aggregate data by country
+    Map<String, Map<String, dynamic>> aggregatedData = {};
 
-  for (var song in songs) {
-    String country = song['country'];
-    if (!aggregatedData.containsKey(country)) {
-      aggregatedData[country] = {
-        'country': country,
-        'song_count': 0,
-        'total_score': 0,
-        'average_score': 0,
-      };
+    for (var song in songs) {
+      String country = song['country'];
+      if (!aggregatedData.containsKey(country)) {
+        aggregatedData[country] = {
+          'country': country,
+          'song_count': 0,
+          'total_score': 0,
+          'average_score': 0,
+        };
+      }
+      aggregatedData[country]?['song_count'] += 1;
+      aggregatedData[country]?['total_score'] += song['average_score'];
     }
-    aggregatedData[country]?['song_count'] += 1;
-    aggregatedData[country]?['total_score'] += song['average_score'];
+
+    // Calculate average scores
+    aggregatedData.forEach((key, value) {
+      value['average_score'] =
+          (value['total_score'] / value['song_count']).toStringAsFixed(2);
+    });
+
+    // Convert aggregated data into PlutoGrid rows
+    return aggregatedData.values
+        .map((data) => PlutoRow(cells: {
+              'country': PlutoCell(value: data['country']),
+              'song_count': PlutoCell(value: data['song_count'].toString()),
+              'average_score': PlutoCell(value: data['average_score']),
+            }))
+        .toList();
   }
-
-  // Calculate average scores
-  aggregatedData.forEach((key, value) {
-    value['average_score'] = (value['total_score'] / value['song_count']).toStringAsFixed(2);
-  });
-
-  // Convert aggregated data into PlutoGrid rows
-  return aggregatedData.values.map((data) => PlutoRow(
-    cells: {
-      'country': PlutoCell(value: data['country']),
-      'song_count': PlutoCell(value: data['song_count'].toString()),
-      'average_score': PlutoCell(value: data['average_score']),
-    }
-  )).toList();
-}
-
 
   Future<Map<int, int>> fetchVotes(String? userName) async {
-  var url = Uri.parse('$voteGetHTTP?user_name=$userName');
-  var response = await http.get(url);
-  Map<int, int> userVotes = {};
-  if (response.statusCode == 200) {
-    List<dynamic> votes = json.decode(response.body);
-    for (var vote in votes) {
-      userVotes[vote['song_id']] = vote['user_score'];
+    var url = Uri.parse('$voteGetHTTP?user_name=$userName');
+    var response = await http.get(url);
+    Map<int, int> userVotes = {};
+    if (response.statusCode == 200) {
+      List<dynamic> votes = json.decode(response.body);
+      for (var vote in votes) {
+        userVotes[vote['song_id']] = vote['user_score'];
+      }
     }
+    return userVotes;
   }
-  return userVotes;
-}
 
   sortSongs() {
-  if (sortByCountry) {
-    songs.sort((a, b) => a['country'].compareTo(b['country']));
-  } else {
-    songs.sort((a, b) {
-      int scoreComparison = b['average_score'].compareTo(a['average_score']);
-      if (scoreComparison != 0) {
-        return scoreComparison;
-      } else {
-        return a['country'].compareTo(b['country']);
-      }
-    });
+    if (sortByCountry) {
+      songs.sort((a, b) => a['country'].compareTo(b['country']));
+    } else {
+      songs.sort((a, b) {
+        int scoreComparison = b['average_score'].compareTo(a['average_score']);
+        if (scoreComparison != 0) {
+          return scoreComparison;
+        } else {
+          return a['country'].compareTo(b['country']);
+        }
+      });
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,12 +143,12 @@ class ResultsPageState extends State<ResultsPageOrig> {
             child: Text(
               showUnvotedOnly ? 'Show All' : "Hide Voted Songs",
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color ??
+                    Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-
           OutlinedButton(
             onPressed: () {
               setState(() {
@@ -162,7 +159,8 @@ class ResultsPageState extends State<ResultsPageOrig> {
             child: Text(
               sortByCountry ? 'Sort by Score' : 'Sort Alphabetically',
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+                color: Theme.of(context).textTheme.bodyLarge?.color ??
+                    Colors.black,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -202,13 +200,13 @@ class ResultsPageState extends State<ResultsPageOrig> {
       //   },
       // ),
       bottomNavigationBar: BottomAppBar(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          ThemeSwitcherButton(),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ThemeSwitcherButton(),
+          ],
+        ),
       ),
-    ),
     );
   }
 }

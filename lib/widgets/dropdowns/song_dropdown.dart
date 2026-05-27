@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flag/flag.dart';
-import '../../http_util.dart';
-import '../buttons/favorite_button.dart';
 import 'package:euro_app/global.dart';
-import 'package:provider/provider.dart';
+import '../../services/api_endpoints.dart';
+import '../buttons/favorite_button.dart';
 
 class SongDropdown extends StatefulWidget {
   final Function(int, String, String, int) onSongSelected;
@@ -25,7 +24,6 @@ class SongDropdown extends StatefulWidget {
   _SongDropdownState createState() => _SongDropdownState();
 }
 
-
 class _SongDropdownState extends State<SongDropdown> {
   List<dynamic> songs = [];
   String? _selectedSong;
@@ -36,7 +34,8 @@ class _SongDropdownState extends State<SongDropdown> {
     'artist': '',
     'x_count': 0,
   };
-  String displaySelection = 'country'; // Options: 'country', 'song_name', 'artist'
+  String displaySelection =
+      'country'; // Options: 'country', 'song_name', 'artist'
 
   @override
   void initState() {
@@ -50,7 +49,8 @@ class _SongDropdownState extends State<SongDropdown> {
     if (response.statusCode == 200) {
       setState(() {
         songs = json.decode(response.body);
-        songs.sort((a, b) => a['country'].compareTo(b['country']));  // Sort the list by the 'name' property
+        songs.sort((a, b) => a['country']
+            .compareTo(b['country'])); // Sort the list by the 'name' property
       });
     } else {
       // Handle server errors
@@ -59,13 +59,14 @@ class _SongDropdownState extends State<SongDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    int? currentSongId = Provider.of<SongSelection>(context, listen: false).selectedSongId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            displaySelection == 'country' && displayInfo['country'] != '' && displayInfo['country_code'] != 'Unknown'
+            displaySelection == 'country' &&
+                    displayInfo['country'] != '' &&
+                    displayInfo['country_code'] != 'Unknown'
                 ? Flag.fromString(
                     displayInfo['country_code'] ?? '',
                     height: 50,
@@ -97,19 +98,20 @@ class _SongDropdownState extends State<SongDropdown> {
                   if (selectedSong.isNotEmpty) {
                     _selectedSong = newValue;
                     // updateDisplayInfo(selectedSong);
-                    Global.songSelection.setSelectedSongId(selectedSong['song_id']);
+                    Global.songSelection
+                        .setSelectedSongId(selectedSong['song_id']);
                   }
                   displayInfo['country'] = selectedSong['country'] ?? '';
                   displayInfo['song_name'] = selectedSong['song_name'] ?? '';
                   displayInfo['artist'] = selectedSong['artist'] ?? '';
-                  displayInfo['country_code'] = selectedSong['country_code'] ?? '';
+                  displayInfo['country_code'] =
+                      selectedSong['country_code'] ?? '';
                   displayInfo['x_count'] = selectedSong['x_count'] ?? 0;
                   widget.onSongSelected(
-                    selectedSong['song_id'],
-                    selectedSong['song_name'],
-                    selectedSong['country'],
-                    selectedSong['x_count']
-                    );
+                      selectedSong['song_id'],
+                      selectedSong['song_name'],
+                      selectedSong['country'],
+                      selectedSong['x_count']);
                 });
               },
               items: songs.map<DropdownMenuItem<String>>((dynamic song) {

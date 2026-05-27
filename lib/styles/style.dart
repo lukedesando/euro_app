@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:euro_app/pages/finals_page.dart';  // Import FinalsPage
+import 'package:euro_app/pages/finals_page.dart';
 
 class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -11,11 +11,10 @@ class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
     return AppBar(
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.center, // Center the content horizontally
+        mainAxisAlignment:
+            MainAxisAlignment.center, // Center the content horizontally
         children: [
           GestureDetector(
             onTap: () {
@@ -47,7 +46,9 @@ class LogoBlackandWhite extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
     return Image.asset(
-      isDarkTheme ? 'assets/images/logo_white_txt.png' : 'assets/images/logo_black_txt.png',
+      isDarkTheme
+          ? 'assets/images/logo_white_txt.png'
+          : 'assets/images/logo_black_txt.png',
       height: 40,
     );
   }
