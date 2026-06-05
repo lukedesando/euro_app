@@ -24,17 +24,23 @@ APP_HOST=0.0.0.0
 APP_PORT=5000
 API_HOST=your_lan_ip_or_hostname
 API_PORT=5000
+
+# Optional: full public API URLs, useful for Cloudflare Tunnel.
+API_BASE_HTTP=https://api.desando.org
+API_BASE_WS=wss://api.desando.org
 ```
 
 Notes:
 
 - `APP_HOST` / `APP_PORT` control where Flask listens.
 - `API_HOST` / `API_PORT` control what the Flutter app calls.
+- `API_BASE_HTTP` / `API_BASE_WS` override the generated host/port URLs. Use these for HTTPS/WSS public hosting such as Cloudflare Tunnel.
 - If `API_HOST` is omitted, `generate_config.dart` falls back to `DB_HOST`.
 - If `API_PORT` is omitted, `generate_config.dart` falls back to `APP_PORT`, then `DB_PORT`, then `5000`.
+- If `API_BASE_HTTP` / `API_BASE_WS` are omitted, `generate_config.dart` builds them from `API_HOST` / `API_PORT`.
 - `DATABASE_URL` can replace the `DB_*` settings later if the backend moves away from MariaDB.
 - Runtime web config is written to `web/config.json` and copied into `build/web/config.json`.
-- After building, you can edit `build/web/config.json` and refresh the browser to point the app at a different API host without rebuilding Flutter.
+- After building, you can edit `build/web/config.json` and refresh the browser to point the app at a different API URL without rebuilding Flutter.
 
 ## Backend
 

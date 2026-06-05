@@ -1,4 +1,6 @@
 {
   "API_HOST": "your_lan_ip_or_hostname",
-  "API_PORT": "5000"
+  "API_PORT": "5000",
+  "API_BASE_HTTP": "https://api.desando.org",
+  "API_BASE_WS": "wss://api.desando.org"
 }

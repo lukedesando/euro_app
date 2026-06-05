@@ -1,4 +1,5 @@
 param(
+    [string] $BaseUrl,
     [string] $HostName,
     [int] $Port = 0
 )
@@ -22,13 +23,19 @@ function Get-EnvFileValue {
 }
 
 if (-not $HostName) {
+    if (-not $BaseUrl) {
+        $BaseUrl = Get-EnvFileValue "API_BASE_HTTP"
+    }
+}
+
+if (-not $BaseUrl -and -not $HostName) {
     $HostName = Get-EnvFileValue "API_HOST"
     if (-not $HostName) {
         $HostName = Get-EnvFileValue "DB_HOST"
     }
 }
 
-if ($Port -eq 0) {
+if (-not $BaseUrl -and $Port -eq 0) {
     $portValue = Get-EnvFileValue "API_PORT"
     if (-not $portValue) {
         $portValue = Get-EnvFileValue "APP_PORT"
@@ -43,9 +50,14 @@ if ($Port -eq 0) {
     $Port = [int] $portValue
 }
 
-if (-not $HostName) {
-    throw "No host was provided and API_HOST/DB_HOST could not be read from .env."
+if ($BaseUrl) {
+    $uri = "$($BaseUrl.TrimEnd('/'))/health"
+} else {
+    if (-not $HostName) {
+        throw "No host was provided and API_BASE_HTTP/API_HOST/DB_HOST could not be read from .env."
+    }
+
+    $uri = "http://${HostName}:${Port}/health"
 }
 
-$uri = "http://${HostName}:${Port}/health"
 Invoke-RestMethod -Uri $uri
