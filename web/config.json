@@ -1,0 +1,4 @@
+{
+  "API_BASE_HTTP": "https://api.desando.org",
+  "API_BASE_WS": "wss://api.desando.org"
+}
