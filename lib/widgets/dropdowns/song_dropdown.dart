@@ -10,18 +10,18 @@ class SongDropdown extends StatefulWidget {
   final Function(int, String, String, int) onSongSelected;
   final int songId;
   final String userName;
-  final int x_count;
+  final int xCount;
 
   const SongDropdown({
-    Key? key,
+    super.key,
     required this.onSongSelected,
     required this.songId,
     required this.userName,
-    required this.x_count,
-  }) : super(key: key);
+    required this.xCount,
+  });
 
   @override
-  _SongDropdownState createState() => _SongDropdownState();
+  State<SongDropdown> createState() => _SongDropdownState();
 }
 
 class _SongDropdownState extends State<SongDropdown> {
@@ -53,17 +53,16 @@ class _SongDropdownState extends State<SongDropdown> {
     }
   }
 
-  fetchSongs() async {
-    var url = Uri.parse(songsHTTP);
-    var response = await http.get(url);
+  Future<void> fetchSongs() async {
+    final url = Uri.parse(songsHTTP);
+    final response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
         songs = json.decode(response.body);
-        songs.sort((a, b) => a['country']
-            .compareTo(b['country'])); // Sort the list by the 'name' property
-      });
-    } else {
-      // Handle server errors
+        songs.sort(
+          (a, b) => a['country'].compareTo(b['country']),
+        );
+      }); // Sort the list by country name.
     }
   }
 
@@ -82,56 +81,71 @@ class _SongDropdownState extends State<SongDropdown> {
                     height: 50,
                     width: 65,
                   )
-                : Container(),
-            SizedBox(width: 10),
-            Text('Song is: ${displayInfo['song_name'] ?? ''}'),
+                : const SizedBox.shrink(),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Song is: ${displayInfo['song_name'] ?? ''}',
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
+            ),
           ],
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Row(
           children: [
-            DropdownButton<String>(
-              value: _selectedSong,
-              icon: const Icon(Icons.arrow_downward),
-              elevation: 16,
-              underline: Container(
-                height: 2,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _selectedSong = newValue!;
-                  var selectedSong = songs.firstWhere(
-                    (song) => song[displaySelection] == newValue,
-                    orElse: () => <String, dynamic>{},
-                  );
-                  if (selectedSong.isNotEmpty) {
+            Expanded(
+              child: DropdownButton<String>(
+                value: _selectedSong,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_downward),
+                elevation: 16,
+                underline: Container(
+                  height: 2,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onChanged: (String? newValue) {
+                  if (newValue == null) return;
+                  setState(() {
                     _selectedSong = newValue;
-                    _selectedSongId = selectedSong['song_id'];
-                    // updateDisplayInfo(selectedSong);
-                    Global.songSelection
-                        .setSelectedSongId(selectedSong['song_id']);
-                  }
-                  displayInfo['country'] = selectedSong['country'] ?? '';
-                  displayInfo['song_name'] = selectedSong['song_name'] ?? '';
-                  displayInfo['artist'] = selectedSong['artist'] ?? '';
-                  displayInfo['country_code'] =
-                      selectedSong['country_code'] ?? '';
-                  displayInfo['x_count'] = selectedSong['x_count'] ?? 0;
-                  widget.onSongSelected(
-                      selectedSong['song_id'],
-                      selectedSong['song_name'],
-                      selectedSong['country'],
-                      selectedSong['x_count']);
-                });
-              },
-              items: songs.map<DropdownMenuItem<String>>((dynamic song) {
-                return DropdownMenuItem<String>(
-                  value: song[displaySelection],
-                  child: Text(song[displaySelection]),
-                );
-              }).toList(),
+                    var selectedSong = songs.firstWhere(
+                      (song) => song[displaySelection] == newValue,
+                      orElse: () => <String, dynamic>{},
+                    );
+                    if (selectedSong.isNotEmpty) {
+                      _selectedSong = newValue;
+                      _selectedSongId = selectedSong['song_id'];
+                      // updateDisplayInfo(selectedSong);
+                      Global.songSelection
+                          .setSelectedSongId(selectedSong['song_id']);
+                    }
+                    displayInfo['country'] = selectedSong['country'] ?? '';
+                    displayInfo['song_name'] = selectedSong['song_name'] ?? '';
+                    displayInfo['artist'] = selectedSong['artist'] ?? '';
+                    displayInfo['country_code'] =
+                        selectedSong['country_code'] ?? '';
+                    displayInfo['x_count'] = selectedSong['x_count'] ?? 0;
+                    widget.onSongSelected(
+                        selectedSong['song_id'],
+                        selectedSong['song_name'],
+                        selectedSong['country'],
+                        selectedSong['x_count']);
+                  });
+                },
+                items: songs.map<DropdownMenuItem<String>>((dynamic song) {
+                  final label = song[displaySelection] as String;
+                  return DropdownMenuItem<String>(
+                    value: label,
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
+            const SizedBox(width: 8),
             FavoriteButton(
               key: ValueKey('favorite-${widget.userName}-$_selectedSongId'),
               songId: _selectedSongId,

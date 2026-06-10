@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -96,54 +96,65 @@ class _HomePageState extends State<HomePage> {
       appBar: const AppBarEuro(title: 'Vote for Eurovision Song'),
       body: Stack(
         children: [
-          _buildContent(),
+          Positioned.fill(child: _buildContent()),
           if (_showGlitter)
             GlitterBox(
               child:
-                  Container(), // Empty container since GlitterBox is an effect overlay
+                  const SizedBox.shrink(), // Empty child since GlitterBox is an effect overlay
             ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            NavigationButton(
-              buttonText: 'Results',
-              nextPage: ResultsPage(userName: currentUserName),
-            ),
-            ThemeSwitcherButton(),
-            NavigationButton(
-              buttonText: 'Favorites',
-              nextPage: FavoritesPage(userName: nameController.text),
-            ),
-          ],
+        child: SizedBox(
+          height: kBottomNavigationBarHeight,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            children: [
+              NavigationButton(
+                buttonText: 'Results',
+                nextPage: ResultsPage(userName: currentUserName),
+              ),
+              const SizedBox(width: 12),
+              const ThemeSwitcherButton(),
+              const SizedBox(width: 12),
+              NavigationButton(
+                buttonText: 'Favorites',
+                nextPage: FavoritesPage(userName: nameController.text),
+              ),
+              const SizedBox(width: 12),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildContent() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    final screenHeight = MediaQuery.of(context).size.height;
+    final compactSpacing = screenHeight <= 560;
+    final sectionSpacing = compactSpacing ? 12.0 : 20.0;
+
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           NameInputField(
             controller: nameController,
             onNameChanged: _onNameChanged,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: sectionSpacing),
           const Text('Select Country:'),
           SongDropdown(
             onSongSelected: _onSongChanged,
             songId: _selectedSongID ?? 0,
             userName: nameController.text,
-            x_count: Global.xCountModel.xCount, // Use global x_count
+            xCount: Global.xCountModel.xCount,
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: sectionSpacing),
           ScoreSlider(onScoreChanged: _onScoreChanged),
-          const SizedBox(height: 20),
+          SizedBox(height: sectionSpacing),
           Center(
             child: VoteButton(
               songName: selectedSong ?? 'No Song Selected',
@@ -154,7 +165,7 @@ class _HomePageState extends State<HomePage> {
               onUpdate: _onVoteButtonPressed,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: sectionSpacing),
           Center(
             child: XButton(
               songName: selectedSong ?? 'No Song Selected',
@@ -165,7 +176,7 @@ class _HomePageState extends State<HomePage> {
               onUpdate: _onXButtonPressed,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: sectionSpacing),
           Center(
             child: Consumer<XCountModel>(
               builder: (context, xCountModel, child) {

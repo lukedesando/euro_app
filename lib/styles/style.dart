@@ -5,30 +5,34 @@ class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   const AppBarEuro({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      centerTitle: false,
       title: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.center, // Center the content horizontally
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => FinalsPage()),
-              );
-            },
-            child: LogoBlackandWhite(),
+          Flexible(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FinalsPage()),
+                );
+              },
+              child: const LogoBlackandWhite(maxWidth: 150),
+            ),
           ),
-          SizedBox(width: 10), // Add some space between the logo and the text
-          Text(
-            this.title,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -36,20 +40,32 @@ class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
 class LogoBlackandWhite extends StatelessWidget {
-  const LogoBlackandWhite({Key? key}) : super(key: key);
+  const LogoBlackandWhite({super.key, this.maxWidth});
+
+  final double? maxWidth;
 
   @override
   Widget build(BuildContext context) {
     final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    return Image.asset(
+    final image = Image.asset(
       isDarkTheme
           ? 'assets/images/logo_white_txt.png'
           : 'assets/images/logo_black_txt.png',
       height: 40,
+      fit: BoxFit.contain,
+    );
+
+    if (maxWidth == null) {
+      return image;
+    }
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth!),
+      child: image,
     );
   }
 }
