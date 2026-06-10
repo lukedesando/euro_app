@@ -12,6 +12,7 @@ if __name__ == "__main__":
         app=app,
         host=app_host,
         port=app_port,
-        debug=True,
+        debug=False,
+        use_reloader=False,
         allow_unsafe_werkzeug=True,
     )

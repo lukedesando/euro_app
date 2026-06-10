@@ -19,6 +19,7 @@ class FavoriteButton extends StatefulWidget {
 
 class _FavoriteButtonState extends State<FavoriteButton> {
   bool _isFavorited = false;
+  int _favoriteCheckRequest = 0;
 
   @override
   void initState() {
@@ -35,35 +36,75 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     }
   }
 
-  void _checkIfFavorited() async {
-    if (widget.userName.isEmpty || widget.songId == 0) {
+  Future<void> _checkIfFavorited() async {
+    final requestId = ++_favoriteCheckRequest;
+    final songId = widget.songId;
+    final userName = widget.userName.trim();
+    if (userName.isEmpty || songId == 0) {
       setState(() {
         _isFavorited = false;
       });
       return;
     }
 
-    final url = Uri.parse('$favoriteGetHTTP/${widget.userName}');
-    final response = await http.get(url);
-    if (!mounted) return;
+    try {
+      final url = Uri.parse('$favoriteGetHTTP/${Uri.encodeComponent(userName)}');
+      final response = await http.get(url);
+      if (!mounted ||
+          requestId != _favoriteCheckRequest ||
+          songId != widget.songId ||
+          userName != widget.userName.trim()) {
+        return;
+      }
 
-    if (response.statusCode == 200) {
-      List<dynamic> favoritesJson = json.decode(response.body);
-      List<int> favoriteSongIds =
-          favoritesJson.map((fav) => fav['song_id'] as int).toList();
-      setState(() {
-        _isFavorited = favoriteSongIds.contains(widget.songId);
-      });
-    } else {
-      // Handle error
+      if (response.statusCode == 200) {
+        List<dynamic> favoritesJson = json.decode(response.body);
+        List<int> favoriteSongIds =
+            favoritesJson.map((fav) => fav['song_id'] as int).toList();
+        setState(() {
+          _isFavorited = favoriteSongIds.contains(songId);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not check favorite (${response.statusCode}).'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      if (!mounted ||
+          requestId != _favoriteCheckRequest ||
+          songId != widget.songId ||
+          userName != widget.userName.trim()) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not check favorite: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   void _toggleFavorite() async {
-    if (widget.userName.isEmpty) {
+    final songId = widget.songId;
+    final userName = widget.userName.trim();
+    if (userName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('You must type in your name to favorite a song.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (songId == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Select a song before favoriting.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -74,23 +115,41 @@ class _FavoriteButtonState extends State<FavoriteButton> {
         ? Uri.parse(favoriteRemoveHTTP)
         : Uri.parse(favoriteAddHTTP);
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'user_name': widget.userName,
-        'song_id': widget.songId,
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'user_name': userName,
+          'song_id': songId,
+        }),
+      );
 
-    if (!mounted) return;
+      if (!mounted ||
+          songId != widget.songId ||
+          userName != widget.userName.trim()) {
+        return;
+      }
 
-    if (response.statusCode == 200) {
-      setState(() {
-        _isFavorited = !_isFavorited;
-      });
-    } else {
-      // Handle error
+      if (response.statusCode == 200) {
+        await _checkIfFavorited();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Could not update favorite (${response.statusCode}).'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Could not update favorite: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -110,7 +169,9 @@ class FavoritesList extends StatelessWidget {
   const FavoritesList({Key? key, required this.userName}) : super(key: key);
 
   Future<List<int>> _fetchFavorites() async {
-    final url = Uri.parse('$favoriteGetHTTP/$userName');
+    final url = Uri.parse(
+      '$favoriteGetHTTP/${Uri.encodeComponent(userName.trim())}',
+    );
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

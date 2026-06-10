@@ -23,6 +23,16 @@ def build_database_uri():
     password = env_value("DB_PASSWORD", required=True)
     host = env_value("DB_HOST", required=True)
     name = env_value("DB_NAME", required=True)
-    db_port = env_value("DATABASE_PORT")
+    db_port = env_value("DB_PORT", env_value("DATABASE_PORT"))
     port_segment = f":{db_port}" if db_port else ""
     return f"{engine}://{user}:{password}@{host}{port_segment}/{name}"
+
+
+def build_engine_options():
+    connect_timeout = env_value("DB_CONNECT_TIMEOUT", "5")
+    try:
+        connect_timeout = int(connect_timeout)
+    except ValueError as exc:
+        raise RuntimeError("DB_CONNECT_TIMEOUT must be an integer number of seconds") from exc
+
+    return {"connect_args": {"connect_timeout": connect_timeout}}

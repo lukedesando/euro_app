@@ -18,7 +18,9 @@ DB_ENGINE=mysql
 DB_USER=your_database_user
 DB_PASSWORD=your_database_password
 DB_HOST=your_database_host
+DB_PORT=3306
 DB_NAME=eurovision_db
+DB_CONNECT_TIMEOUT=5
 
 APP_HOST=0.0.0.0
 APP_PORT=5000
@@ -35,6 +37,7 @@ Notes:
 - `APP_HOST` / `APP_PORT` control where Flask listens.
 - `API_HOST` / `API_PORT` control what the Flutter app calls.
 - `API_BASE_HTTP` / `API_BASE_WS` override the generated host/port URLs. Use these for HTTPS/WSS public hosting such as Cloudflare Tunnel.
+- `DB_CONNECT_TIMEOUT` controls how long backend database requests wait before returning a 503.
 - If `API_HOST` is omitted, `generate_config.dart` falls back to `DB_HOST`.
 - If `API_PORT` is omitted, `generate_config.dart` falls back to `APP_PORT`, then `DB_PORT`, then `5000`.
 - If `API_BASE_HTTP` / `API_BASE_WS` are omitted, `generate_config.dart` builds them from `API_HOST` / `API_PORT`.
@@ -59,6 +62,38 @@ Expected healthy response:
 ```json
 {"database":"reachable","status":"ok"}
 ```
+
+## Location Setup
+
+When the server IP changes, update the backend database host and frontend API URLs together:
+
+```powershell
+.\scripts\configure_location.ps1 -ServerHost 192.168.4.102
+```
+
+For event night, replace `192.168.4.102` with the event network IP address of the machine running Flask. If MariaDB is on the same machine as Flask and only listens locally, use:
+
+```powershell
+.\scripts\configure_location.ps1 -ServerHost 192.168.x.x -DbHost localhost
+```
+
+This updates `.env`, `web/config.json`, and `build/web/config.json` when the build output exists. After running it, restart the backend and refresh the web app.
+
+## Updating Songs
+
+Pick a Eurovision year and scrape the participant song table plus the final split results from Wikipedia:
+
+```powershell
+.\scripts\update_songs.ps1 -Year 2024 -DryRun
+```
+
+When the preview looks right, overwrite MariaDB:
+
+```powershell
+.\scripts\update_songs.ps1 -Year 2024
+```
+
+The updater replaces `songs`, reloads `final_results`, and clears `votes` and `favorites` so old contest data cannot point at the new song IDs. Add `-Yes` to skip the confirmation prompt.
 
 ## Frontend
 

@@ -2,5 +2,24 @@
   "API_HOST": "your_lan_ip_or_hostname",
   "API_PORT": "5000",
   "API_BASE_HTTP": "https://api.desando.org",
-  "API_BASE_WS": "wss://api.desando.org"
+  "API_BASE_WS": "wss://api.desando.org",
+  "LANDING_PAGE": {
+    "enabled": true,
+    "image": "assets/images/logo_black_txt.png",
+    "text": "desando.org",
+    "theme": {
+      "light": {
+        "background": "#FFFFFF",
+        "text": "#000000",
+        "controlBackground": "#F1F1F1",
+        "controlForeground": "#111111"
+      },
+      "dark": {
+        "background": "#0E0E0E",
+        "text": "#FFFFFF",
+        "controlBackground": "#232323",
+        "controlForeground": "#FFFFFF"
+      }
+    }
+  }
 }

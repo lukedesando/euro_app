@@ -3,4 +3,4 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 db = SQLAlchemy()
-socketio = SocketIO(cors_allowed_origins="*")
+socketio = SocketIO(async_mode="threading", cors_allowed_origins="*")

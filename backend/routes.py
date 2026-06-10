@@ -1,7 +1,7 @@
 import logging
 
 from flask import jsonify, request
-from sqlalchemy import text
+from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from .extensions import db, socketio
@@ -11,12 +11,18 @@ from .serializers import final_result_payload, song_payload
 
 
 def register_routes(app):
+    @app.errorhandler(SQLAlchemyError)
+    def handle_database_error(exc):
+        db.session.rollback()
+        logging.error("Database request failed: %s", exc)
+        return jsonify({"error": "Database unavailable"}), 503
+
     @app.route("/health", methods=["GET"])
     def health():
         try:
             db.session.execute(text("SELECT 1"))
         except SQLAlchemyError as exc:
-            logging.exception("Database health check failed")
+            logging.error("Database health check failed: %s", exc)
             return jsonify({"status": "error", "database": "unreachable", "error": str(exc)}), 503
 
         return jsonify({"status": "ok", "database": "reachable"})
@@ -115,9 +121,12 @@ def register_routes(app):
         error = require_json_fields(data, ["user_name", "song_id"])
         if error:
             return jsonify({"error": error}), 400
+        user_name = data["user_name"].strip()
+        if not user_name:
+            return jsonify({"error": "user_name is required"}), 400
 
         try:
-            db.session.add(Favorite(user_name=data["user_name"], song_id=data["song_id"]))
+            db.session.add(Favorite(user_name=user_name, song_id=data["song_id"]))
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
@@ -130,10 +139,13 @@ def register_routes(app):
         error = require_json_fields(data, ["user_name", "song_id"])
         if error:
             return jsonify({"error": error}), 400
+        user_name = data["user_name"].strip()
+        if not user_name:
+            return jsonify({"error": "user_name is required"}), 400
 
-        favorite = Favorite.query.filter_by(
-            user_name=data["user_name"],
-            song_id=data["song_id"],
+        favorite = Favorite.query.filter(
+            func.trim(Favorite.user_name) == user_name,
+            Favorite.song_id == data["song_id"],
         ).first()
         if not favorite:
             return jsonify({"message": "Favorite not found"}), 404
@@ -144,10 +156,14 @@ def register_routes(app):
 
     @app.route("/get_favorites/<user_name>", methods=["GET"])
     def get_favorites(user_name):
+        user_name = user_name.strip()
+        if not user_name:
+            return json_no_cache([])
+
         favorite_song_ids = [
             song_id
             for (song_id,) in db.session.query(Favorite.song_id)
-            .filter_by(user_name=user_name)
+            .filter(func.trim(Favorite.user_name) == user_name)
             .all()
         ]
 

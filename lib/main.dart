@@ -6,6 +6,7 @@ import 'widgets/buttons/theme_switch_button.dart';
 import 'models/x_count_model.dart';
 
 import 'package:euro_app/pages/home_page.dart';
+import 'package:euro_app/pages/landing_page.dart';
 import 'global.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       themeMode: themeProvider.themeMode,
-      home: HomePage(),
+      home: RuntimeConfig.landingPage.enabled ? const LandingPage() : HomePage(),
     );
   }
 }

@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
             ThemeSwitcherButton(),
             NavigationButton(
               buttonText: 'Favorites',
-              nextPage: FavoritesPage(userName: currentUserName),
+              nextPage: FavoritesPage(userName: nameController.text),
             ),
           ],
         ),
@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
           SongDropdown(
             onSongSelected: _onSongChanged,
             songId: _selectedSongID ?? 0,
-            userName: currentUserName ?? '',
+            userName: nameController.text,
             x_count: Global.xCountModel.xCount, // Use global x_count
           ),
           const SizedBox(height: 20),

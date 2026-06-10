@@ -27,6 +27,7 @@ class SongDropdown extends StatefulWidget {
 class _SongDropdownState extends State<SongDropdown> {
   List<dynamic> songs = [];
   String? _selectedSong;
+  late int _selectedSongId;
 
   Map<String, dynamic> displayInfo = {
     'country': '',
@@ -40,7 +41,16 @@ class _SongDropdownState extends State<SongDropdown> {
   @override
   void initState() {
     super.initState();
+    _selectedSongId = widget.songId;
     fetchSongs();
+  }
+
+  @override
+  void didUpdateWidget(SongDropdown oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.songId != oldWidget.songId) {
+      _selectedSongId = widget.songId;
+    }
   }
 
   fetchSongs() async {
@@ -97,6 +107,7 @@ class _SongDropdownState extends State<SongDropdown> {
                   );
                   if (selectedSong.isNotEmpty) {
                     _selectedSong = newValue;
+                    _selectedSongId = selectedSong['song_id'];
                     // updateDisplayInfo(selectedSong);
                     Global.songSelection
                         .setSelectedSongId(selectedSong['song_id']);
@@ -122,7 +133,8 @@ class _SongDropdownState extends State<SongDropdown> {
               }).toList(),
             ),
             FavoriteButton(
-              songId: widget.songId,
+              key: ValueKey('favorite-${widget.userName}-$_selectedSongId'),
+              songId: _selectedSongId,
               userName: widget.userName,
             ),
           ],
