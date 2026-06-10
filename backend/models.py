@@ -16,12 +16,13 @@ class Song(db.Model):
     __tablename__ = "songs"
 
     song_id = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String(50))
-    song_name = db.Column(db.String(50))
-    artist = db.Column(db.String(50))
-    language = db.Column(db.String(50))
+    country = db.Column(db.String(100))
+    song_name = db.Column(db.String(255))
+    artist = db.Column(db.String(255))
+    language = db.Column(db.String(255))
     average_score = db.Column(db.Float)
     x_count = db.Column(db.Integer, default=0)
+    final_rank = db.Column(db.Integer, default=0)
 
 
 class Country(db.Model):
