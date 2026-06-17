@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:euro_app/widgets/buttons/spotify_button.dart';
+import 'package:euro_app/widgets/buttons/youtube_music_button.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flag/flag.dart';
@@ -154,11 +155,19 @@ class FavoritesPageState extends State<FavoritesPage> {
             width: 75,
           ),
           trailing: SizedBox(
-            width: 40, // Adjust the width as needed
-            height: 40, // Adjust the height as needed
-            child: SpotifyButton(
-              songName: song['song_name'],
-              artistName: song['artist'],
+            width: 88,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SpotifyButton(
+                  songName: song['song_name'],
+                  artistName: song['artist'],
+                ),
+                YouTubeMusicButton(
+                  songName: song['song_name'],
+                  artistName: song['artist'],
+                ),
+              ],
             ),
           ),
         );
