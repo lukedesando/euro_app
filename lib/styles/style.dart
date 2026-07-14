@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:euro_app/pages/finals_page.dart';
+import 'package:euro_app/pages/official_results_page.dart';
 
 class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final String? userName;
 
   const AppBarEuro({
     super.key,
     required this.title,
+    this.userName,
   });
 
   @override
@@ -20,7 +22,9 @@ class AppBarEuro extends StatelessWidget implements PreferredSizeWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FinalsPage()),
+                  MaterialPageRoute(
+                    builder: (context) => OfficialResultsPage(userName: userName),
+                  ),
                 );
               },
               child: const LogoBlackandWhite(maxWidth: 150),
