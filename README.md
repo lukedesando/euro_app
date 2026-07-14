@@ -79,6 +79,14 @@ For event night, replace `192.168.4.102` with the event network IP address of th
 
 This updates `.env`, `web/config.json`, and `build/web/config.json` when the build output exists. After running it, restart the backend and refresh the web app.
 
+For a public HTTPS API behind Cloudflare Tunnel or another reverse proxy, set the exact public URLs:
+
+```powershell
+.\scripts\configure_location.ps1 -ServerHost 192.168.x.x -DbHost localhost -ApiHost api.desando.org -ApiPort 443 -ApiBaseHttp https://api.desando.org -ApiBaseWs wss://api.desando.org
+```
+
+This keeps the backend on the local machine while telling the web app to call the public API origin instead of a private LAN IP.
+
 ## Updating Songs
 
 Pick a Eurovision year and scrape the participant song table plus the final split results from Wikipedia:
@@ -96,6 +104,28 @@ When the preview looks right, overwrite MariaDB:
 The updater replaces `songs`, reloads `final_results`, and clears `votes` and `favorites` so old contest data cannot point at the new song IDs. Add `-Yes` to skip the confirmation prompt.
 
 ## Frontend
+
+One-command event-day workflow:
+
+```powershell
+.\scripts\publish_public.ps1
+```
+
+This command:
+
+- Detects the current machine LAN IP automatically.
+- Sets `.env`, `web/config.json`, and `build/web/config.json` to use the public API URLs.
+- Rebuilds the Flutter web app.
+- Starts the backend on port `5000` if it is not already running.
+- Starts the local static web server on port `8000` if it is not already running.
+- Runs a local API health check.
+
+Useful options:
+
+- `-RestartBackend` restarts Flask after backend code changes.
+- `-RestartWeb` restarts the static web server if needed.
+- `-PubGet` allows Flutter to refresh dependencies before building.
+- `-SkipBuild` is useful when you only need to relaunch the local services.
 
 Generate Flutter config after changing `.env`:
 

@@ -171,10 +171,23 @@ def find_participants_table(soup, year):
 def find_final_split_table(soup):
     for caption in soup.find_all("caption"):
         text = clean_cell_text(caption).lower()
-        if "split results" in text and "final" in text and "semi" not in text:
-            return caption.find_parent("table")
+        if "split results" not in text or "semi" in text:
+            continue
+
+        table = caption.find_parent("table")
+        if "final" in text or table_is_under_final_heading(table):
+            return table
 
     return None
+
+
+def table_is_under_final_heading(table):
+    heading = table.find_previous(["h2", "h3", "h4"])
+    if not heading:
+        return False
+
+    text = clean_cell_text(heading).lower()
+    return "final" in text and "semi" not in text
 
 
 def parse_songs_from_html(html, year):
