@@ -37,3 +37,26 @@ function Assert-DirectoryExists {
         throw "$Description was not found at: $Path"
     }
 }
+
+function Get-PrimaryIPv4Address {
+    $route = Get-NetRoute -DestinationPrefix "0.0.0.0/0" -AddressFamily IPv4 |
+        Sort-Object RouteMetric, ifMetric |
+        Select-Object -First 1
+
+    if (-not $route) {
+        throw "Could not determine the primary IPv4 route for this machine."
+    }
+
+    $ipAddress = Get-NetIPAddress -AddressFamily IPv4 -InterfaceIndex $route.InterfaceIndex |
+        Where-Object {
+            $_.IPAddress -notlike "127.*" -and
+            $_.IPAddress -notlike "169.254.*"
+        } |
+        Select-Object -ExpandProperty IPAddress -First 1
+
+    if (-not $ipAddress) {
+        throw "Could not determine the primary IPv4 address for this machine."
+    }
+
+    return $ipAddress
+}
