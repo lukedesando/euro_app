@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:euro_app/widgets/grids/our_results_grid.dart';
+import 'package:euro_app/widgets/grids/final_results_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:euro_app/widgets/buttons/theme_switch_button.dart';
@@ -8,15 +8,15 @@ import 'package:euro_app/styles/style.dart';
 import '../services/api_endpoints.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
-class ResultsPage extends StatefulWidget {
+class OfficialResultsPage extends StatefulWidget {
   final String? userName;
-  ResultsPage({super.key, this.userName});
+  const OfficialResultsPage({super.key, this.userName});
 
   @override
-  ResultsPageState createState() => ResultsPageState();
+  State<OfficialResultsPage> createState() => _OfficialResultsPageState();
 }
 
-class ResultsPageState extends State<ResultsPage> {
+class _OfficialResultsPageState extends State<OfficialResultsPage> {
   List<dynamic> songs = [];
   bool sortByCountry = true; // Default sort by country
   Timer? _pollingTimer;
@@ -33,7 +33,7 @@ class ResultsPageState extends State<ResultsPage> {
         userVotes = votes;
       });
     });
-    // _startPolling();
+    _startPolling();
   }
 
   @override
@@ -42,14 +42,14 @@ class ResultsPageState extends State<ResultsPage> {
     super.dispose();
   }
 
-  // void _startPolling() {
-  //   _pollingTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-  //     fetchSongs();
-  //   });
-  // }
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(Duration(seconds: 5), (timer) {
+      fetchSongs();
+    });
+  }
 
   void fetchSongs() async {
-    var url = Uri.parse(songsHTTP);
+    var url = Uri.parse(finalResultsHTTP);
     var response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
@@ -60,8 +60,9 @@ class ResultsPageState extends State<ResultsPage> {
   }
 
   Future<Map<int, int>> fetchVotes() async {
-    if (widget.userName == null) return {};
-    var url = Uri.parse('$voteGetHTTP?user_name=${widget.userName}');
+    final userName = widget.userName?.trim();
+    if (userName == null || userName.isEmpty) return {};
+    var url = Uri.parse('$voteGetHTTP?user_name=$userName');
     var response = await http.get(url);
     Map<int, int> votes = {};
     if (response.statusCode == 200) {
@@ -92,20 +93,20 @@ class ResultsPageState extends State<ResultsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Results'),
+        title: const Text('Official Results'),
         centerTitle: false,
         actions: [
           const LogoBlackandWhite(),
         ],
       ),
       body: songs.isEmpty
-          ? CircularProgressIndicator()
-          : SongGrid(songs: songs, userVotes: userVotes),
+          ? const Center(child: CircularProgressIndicator())
+          : FinalsGrid(songs: songs, userVotes: userVotes),
       bottomNavigationBar: BottomAppBar(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            ThemeSwitcherButton(),
+            const ThemeSwitcherButton(),
           ],
         ),
       ),

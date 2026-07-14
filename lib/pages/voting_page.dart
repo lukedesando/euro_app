@@ -15,17 +15,17 @@ import '../widgets/effects/glitter_box.dart';
 import '../widgets/buttons/x_button.dart';
 
 import '../styles/style.dart';
-import 'package:euro_app/pages/results_page.dart';
+import 'package:euro_app/pages/community_results_page.dart';
 import 'package:euro_app/pages/favorites_page.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class VotingPage extends StatefulWidget {
+  const VotingPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<VotingPage> createState() => _VotingPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _VotingPageState extends State<VotingPage> {
   String? selectedSong;
   double _currentScore = 5.0; // Default score
   int? _selectedSongID;
@@ -93,7 +93,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarEuro(title: 'Vote for Eurovision Song'),
+      appBar: AppBarEuro(
+        title: 'Vote for Eurovision Song',
+        userName: currentUserName,
+      ),
       body: Stack(
         children: [
           Positioned.fill(child: _buildContent()),
@@ -113,7 +116,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               NavigationButton(
                 buttonText: 'Results',
-                nextPage: ResultsPage(userName: currentUserName),
+                nextPage: CommunityResultsPage(userName: currentUserName),
               ),
               const SizedBox(width: 12),
               const ThemeSwitcherButton(),
